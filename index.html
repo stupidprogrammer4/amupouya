@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pouya Sadeghi — Backend Developer</title>
+  <style>
+    :root {
+      --bg0: #020c1b;
+      --bg2: #0d1f3c;
+      --blue0: #0a1e40;
+      --blue1: #163566;
+      --blue2: #1d4ed8;
+      --blue3: #3b82f6;
+      --blue4: #60a5fa;
+      --text0: #e2e8f0;
+      --text1: #94a3b8;
+      --text2: #64748b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg0);
+      color: var(--text0);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    #bgCanvas, #bfCanvas {
+      position: fixed; inset: 0; pointer-events: none;
+    }
+    #bgCanvas { z-index: 0; }
+    #bfCanvas  { z-index: 1; }
+
+    #glow {
+      position: fixed; width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(59,130,246,.07) 0%, transparent 70%);
+      pointer-events: none; transform: translate(-50%,-50%); z-index: 2;
+      transition: left .08s, top .08s;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .75rem 2rem;
+      background: rgba(2,12,27,.82);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(29,78,216,.25);
+    }
+    .nav-brand { font-weight: 700; color: var(--blue4); font-size: .95rem; letter-spacing: .04em; }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: var(--text1); text-decoration: none; font-size: .82rem;
+      letter-spacing: .05em; text-transform: uppercase; transition: color .25s; }
+    .nav-links a:hover { color: var(--blue4); }
+
+    .wrap { position: relative; z-index: 10; max-width: 860px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+
+    .hero { text-align: center; padding: 7rem 0 3.5rem; }
+    .hero-crown {
+      display: inline-block; font-size: 3.5rem;
+      animation: crownFloat 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 12px rgba(59,130,246,.6));
+    }
+    @keyframes crownFloat {
+      0%,100% { transform: translateY(0);    filter: drop-shadow(0 0 10px rgba(59,130,246,.5)); }
+      50%      { transform: translateY(-10px); filter: drop-shadow(0 0 22px rgba(96,165,250,.9)); }
+    }
+    .hero h1 {
+      margin-top: 1rem;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 800; letter-spacing: -.02em;
+      background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 40%, #dbeafe 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: fadeUp .7s ease both;
+    }
+    .hero-role {
+      margin-top: .4rem; font-size: 1.1rem; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--blue3);
+      animation: fadeUp .7s .15s ease both;
+    }
+    .hero-bar {
+      width: 100px; height: 2px; margin: 1.4rem auto;
+      background: linear-gradient(90deg, transparent, var(--blue3), transparent);
+      animation: fadeUp .7s .25s ease both;
+    }
+    .contacts {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 1.2rem;
+      animation: fadeUp .7s .35s ease both;
+    }
+    .contacts a, .contacts span {
+      display: flex; align-items: center; gap: .45rem;
+      color: var(--text1); text-decoration: none; font-size: .88rem; transition: color .25s;
+    }
+    .contacts a:hover { color: var(--blue4); }
+    .contacts .ico { color: var(--blue3); font-size: 1rem; }
+
+    section { margin: 3rem 0; }
+    .sec-head { display: flex; align-items: center; gap: .9rem; margin-bottom: 1.4rem; }
+    .sec-ico { font-size: 1.3rem; }
+    .sec-title {
+      font-size: .8rem; font-weight: 700; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--blue4); white-space: nowrap;
+    }
+    .sec-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(29,78,216,.5), transparent); }
+
+    .summary {
+      background: var(--bg2); border: 1px solid var(--blue0);
+      border-left: 3px solid var(--blue2); border-radius: 0 12px 12px 0;
+      padding: 1.4rem 1.6rem; color: var(--text1); font-size: .93rem; line-height: 1.8;
+    }
+
+    .tags { display: flex; flex-wrap: wrap; gap: .55rem; }
+    .tag {
+      background: rgba(13,35,85,.65); border: 1px solid rgba(29,78,216,.5);
+      color: var(--blue4); padding: .35rem .95rem; border-radius: 999px;
+      font-size: .82rem; font-weight: 500; cursor: default; transition: all .25s;
+    }
+    .tag:hover {
+      background: rgba(29,78,216,.22); border-color: var(--blue3); color: #fff;
+      transform: translateY(-2px); box-shadow: 0 4px 14px rgba(59,130,246,.2);
+    }
+
+    .card {
+      background: var(--bg2); border: 1px solid var(--blue0);
+      border-radius: 14px; padding: 1.4rem 1.6rem; margin-bottom: 1.1rem;
+      position: relative; overflow: hidden;
+      transition: transform .3s, box-shadow .3s, border-color .3s;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--blue2), var(--blue4));
+      transform: scaleX(0); transform-origin: left; transition: transform .35s;
+    }
+    .card:hover { transform: translateY(-3px); border-color: var(--blue1);
+      box-shadow: 0 10px 36px rgba(29,78,216,.18); }
+    .card:hover::before { transform: scaleX(1); }
+
+    .card-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      flex-wrap: wrap; gap: .5rem; margin-bottom: .25rem;
+    }
+    .card-title { font-size: 1.05rem; font-weight: 700; }
+    .badge {
+      font-size: .78rem; color: var(--blue4);
+      background: rgba(29,78,216,.12); border: 1px solid rgba(96,165,250,.2);
+      padding: .18rem .65rem; border-radius: 999px; white-space: nowrap;
+    }
+    .card-sub { color: var(--blue3); font-weight: 600; font-size: .9rem; margin-bottom: .9rem; }
+
+    .proj {
+      background: rgba(7,18,37,.7); border: 1px solid rgba(22,53,102,.5);
+      border-radius: 9px; padding: .9rem 1.1rem; margin-top: .9rem;
+    }
+    .proj-title {
+      font-size: .88rem; font-weight: 600; color: var(--blue4);
+      display: flex; align-items: center; gap: .4rem; margin-bottom: .6rem;
+    }
+    .proj ul { list-style: none; padding: 0; }
+    .proj ul li {
+      font-size: .83rem; color: var(--text1); padding: .28rem 0 .28rem 1.2rem;
+      position: relative; line-height: 1.55;
+    }
+    .proj ul li::before {
+      content: '▸'; position: absolute; left: 0; color: var(--blue3);
+      font-size: .7rem; top: .38rem;
+    }
+    .stack { margin-top: .7rem; display: flex; flex-wrap: wrap; gap: .3rem; }
+    .spill {
+      display: inline-block; background: rgba(29,78,216,.1);
+      border: 1px solid rgba(96,165,250,.2); color: var(--blue4);
+      padding: .12rem .55rem; border-radius: 999px; font-size: .74rem;
+    }
+
+    .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 1rem; }
+    .mini-card {
+      background: var(--bg2); border: 1px solid var(--blue0);
+      border-radius: 11px; padding: 1rem 1.2rem; text-align: center; transition: all .3s;
+    }
+    .mini-card:hover { border-color: var(--blue2); box-shadow: 0 4px 18px rgba(29,78,216,.18); }
+    .mini-title { font-weight: 700; font-size: .95rem; }
+    .mini-sub { font-size: .78rem; color: var(--blue4); margin-top: .2rem; }
+
+    .int-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 1rem; }
+    .int-card {
+      background: var(--bg2); border: 1px solid var(--blue0);
+      border-radius: 14px; padding: 1.6rem 1rem; text-align: center;
+      cursor: default; transition: all .3s;
+    }
+    .int-card:hover {
+      transform: translateY(-6px); border-color: var(--blue2);
+      box-shadow: 0 10px 28px rgba(29,78,216,.25);
+    }
+    .int-icon { font-size: 2.4rem; display: block; margin-bottom: .4rem; }
+    .int-label { font-size: .8rem; color: var(--text1); font-weight: 500; }
+
+    footer {
+      text-align: center; padding: 2.5rem 1rem 3rem;
+      border-top: 1px solid rgba(22,53,102,.3);
+      color: var(--text2); font-size: .82rem; margin-top: 3rem;
+    }
+    footer .fbfly { font-size: 1.8rem; display: block; margin-bottom: .5rem;
+      animation: crownFloat 4s ease-in-out infinite; }
+
+    /* ── SKILLS GROUPED ── */
+    .skills-block { display: flex; flex-direction: column; gap: 1rem; }
+    .skills-group-label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--text2); margin-bottom: .25rem;
+    }
+
+    /* ── COMPETITIVE PROGRAMMING ── */
+    .cp-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 1rem; margin-bottom: 1rem;
+    }
+    .cp-card {
+      background: var(--bg2); border: 1px solid var(--blue0);
+      border-radius: 12px; padding: 1.1rem 1.3rem;
+      display: flex; align-items: flex-start; gap: 1rem;
+      transition: all .3s;
+    }
+    .cp-card:hover { border-color: var(--blue2); transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(29,78,216,.18); }
+    .cp-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .cp-title { font-weight: 700; font-size: .92rem; margin-bottom: .18rem; }
+    .cp-sub { font-size: .78rem; color: var(--text2); margin-bottom: .3rem; }
+    .cp-score { font-size: .82rem; color: var(--blue4); }
+    .score-num { font-weight: 700; font-size: 1rem; color: var(--blue3); }
+    .cp-note {
+      font-size: .84rem; color: var(--text1); line-height: 1.7;
+      background: rgba(13,31,60,.6); border: 1px solid var(--blue0);
+      border-radius: 10px; padding: 1rem 1.3rem;
+    }
+
+    /* ── COURSES ── */
+    .course-list { display: flex; flex-direction: column; gap: .75rem; }
+    .course-card {
+      background: var(--bg2); border: 1px solid var(--blue0);
+      border-radius: 10px; padding: 1rem 1.3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: .7rem; transition: all .3s;
+    }
+    .course-card:hover { border-color: var(--blue1); box-shadow: 0 4px 16px rgba(29,78,216,.15); }
+    .course-title { font-weight: 600; font-size: .92rem; }
+    .course-provider { font-size: .78rem; color: var(--text2); margin-top: .18rem; }
+    .course-grade {
+      font-size: .78rem; font-weight: 700; padding: .25rem .8rem;
+      border-radius: 999px; white-space: nowrap;
+    }
+    .course-grade.perfect {
+      background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.35);
+      color: #34d399;
+    }
+
+    /* ── WHAT I DO ── */
+    .wid-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1rem;
+    }
+    .wid-card {
+      background: var(--bg2); border: 1px solid var(--blue0);
+      border-radius: 13px; padding: 1.3rem 1.4rem; transition: all .3s;
+    }
+    .wid-card:hover {
+      border-color: var(--blue2); transform: translateY(-3px);
+      box-shadow: 0 8px 26px rgba(29,78,216,.18);
+    }
+    .wid-icon { font-size: 1.7rem; margin-bottom: .55rem; }
+    .wid-title { font-weight: 700; font-size: .92rem; color: var(--text0); margin-bottom: .4rem; }
+    .wid-desc { font-size: .80rem; color: var(--text1); line-height: 1.6; }
+
+    /* ── SOFT SKILLS ── */
+    .tag.soft {
+      background: rgba(30,10,60,.55); border-color: rgba(139,92,246,.4);
+      color: #c4b5fd;
+    }
+    .tag.soft:hover { background: rgba(139,92,246,.2); border-color: #a78bfa; color: #fff; }
+
+    .rv { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+    .rv.in { opacity: 1; transform: translateY(0); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 580px) {
+      .nav-links { display: none; }
+      .hero { padding-top: 7rem; }
+      .card-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="glow"></div>
+<canvas id="bgCanvas"></canvas>
+<canvas id="bfCanvas"></canvas>
+
+<nav>
+  <div class="nav-brand">🦋 Pouya Sadeghi</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#cp">Competitions</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#interests">Interests</a></li>
+    <li><a href="https://x.com/amupouya" target="_blank" rel="noopener" style="color:var(--blue3)">𝕏</a></li>
+  </ul>
+</nav>
+
+<div class="wrap">
+
+  <section class="hero" id="about">
+    <div class="hero-crown">👑</div>
+    <h1>Pouya Sadeghi</h1>
+    <div class="hero-role">Backend Developer</div>
+    <div class="hero-bar"></div>
+    <div class="contacts">
+      <a href="mailto:ilovelinux764@gmail.com">
+        <span class="ico">✉</span> ilovelinux764@gmail.com
+      </a>
+      <span><span class="ico">📞</span> +98 939 122 6450</span>
+      <a href="https://github.com/stupidprogramer4" target="_blank" rel="noopener">
+        <span class="ico">⌥</span> github.com/stupidprogramer4
+      </a>
+      <a href="https://quera.org/profile/googooli" target="_blank" rel="noopener">
+        <span class="ico">🏆</span> quera.org/googooli
+      </a>
+      <a href="https://x.com/amupouya" target="_blank" rel="noopener">
+        <span class="ico">𝕏</span> @amupouya
+      </a>
+    </div>
+  </section>
+
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-ico">🦋</span>
+      <span class="sec-title">Professional Summary</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="summary">
+      Backend Developer based in <strong style="color:var(--blue4)">Tehran</strong> with a
+      passion for squeezing every bit of performance out of a system. I care deeply about
+      algorithm correctness and low-latency design — two habits forged through years of
+      competitive programming that now shape how I build production software.
+      <br><br>
+      At <strong style="color:var(--blue4)">Goldis</strong> I architect systems that sync
+      thousands of products across Iran's largest marketplaces in real-time, handle
+      automated gold trading without missing a millisecond, and price inventory intelligently
+      using multi-strategy engines. I prefer writing the right tool for the job — including
+      building a custom ORM from scratch when standard ones get in the way.
+      <br><br>
+      Currently studying Computer Science at IAU Central Tehran (2023–2027), exploring
+      <strong style="color:var(--blue4)">Rust</strong> for systems programming, and
+      occasionally shipping 2D games with SDL2.
+    </div>
+  </section>
+
+  <!-- WHAT I DO -->
+  <section class="rv" id="whatido">
+    <div class="sec-head">
+      <span class="sec-ico">🚀</span>
+      <span class="sec-title">What I Do</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="wid-grid">
+      <div class="wid-card">
+        <div class="wid-icon">🔧</div>
+        <div class="wid-title">High-Performance APIs</div>
+        <div class="wid-desc">Build low-latency services with FastAPI and Litestar, optimized for throughput and minimal overhead at every layer.</div>
+      </div>
+      <div class="wid-card">
+        <div class="wid-icon">🔄</div>
+        <div class="wid-title">Real-Time Sync Engines</div>
+        <div class="wid-desc">Design concurrent worker systems that synchronize inventory, orders and pricing across multiple platforms without losing a beat.</div>
+      </div>
+      <div class="wid-card">
+        <div class="wid-icon">📊</div>
+        <div class="wid-title">Automated Pricing Logic</div>
+        <div class="wid-desc">Implement multi-strategy pricing engines with real-time competitor crawling, stop-loss guards and live market rate feeds.</div>
+      </div>
+      <div class="wid-card">
+        <div class="wid-icon">⚙️</div>
+        <div class="wid-title">Algorithm Design</div>
+        <div class="wid-desc">Apply competitive-programming thinking to production problems — heuristics, optimal search, and data structure choices that actually matter.</div>
+      </div>
+      <div class="wid-card">
+        <div class="wid-icon">🗄️</div>
+        <div class="wid-title">Distributed Systems</div>
+        <div class="wid-desc">Wire together PostgreSQL, Redis, RabbitMQ and Elasticsearch into reliable, message-driven architectures built for scale.</div>
+      </div>
+      <div class="wid-card">
+        <div class="wid-icon">🎮</div>
+        <div class="wid-title">2D Game Development</div>
+        <div class="wid-desc">Hobby projects in C with SDL2 — because writing a renderer from scratch keeps low-level instincts sharp.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rv" id="skills">
+    <div class="sec-head">
+      <span class="sec-ico">⚡</span>
+      <span class="sec-title">Technical Skills</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="skills-block">
+      <div class="skills-group-label">Backend &amp; Systems</div>
+      <div class="tags">
+        <span class="tag">Python (FastAPI, Litestar, Flask)</span>
+        <span class="tag">Go (Fiber, GORM)</span>
+        <span class="tag">C / C++ (STL)</span>
+        <span class="tag">Rust</span>
+        <span class="tag">Django</span>
+      </div>
+
+      <div class="skills-group-label">Data &amp; Messaging</div>
+      <div class="tags">
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Redis</span>
+        <span class="tag">RabbitMQ</span>
+        <span class="tag">Elasticsearch</span>
+        <span class="tag">SQLAlchemy</span>
+        <span class="tag">SQLite3</span>
+        <span class="tag">NumPy</span>
+        <span class="tag">Pandas</span>
+      </div>
+
+      <div class="skills-group-label">Architecture &amp; Tooling</div>
+      <div class="tags">
+        <span class="tag">Celery / Taskiq</span>
+        <span class="tag">Algorithm Optimization</span>
+        <span class="tag">Distributed Systems</span>
+        <span class="tag">Docker</span>
+        <span class="tag">Git</span>
+        <span class="tag">Linux</span>
+        <span class="tag">SDL2 (2D Graphics)</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="rv" id="experience">
+    <div class="sec-head">
+      <span class="sec-ico">💼</span>
+      <span class="sec-title">Work Experience</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="card">
+      <div class="card-row">
+        <span class="card-title">Backend Developer</span>
+        <span class="badge">August 2025 – Present</span>
+      </div>
+      <div class="card-sub">Goldis</div>
+
+      <div class="proj">
+        <div class="proj-title">🔄 Multi-Platform Sync &amp; Pricing Engine</div>
+        <ul>
+          <li>Developed a high-performance synchronization engine for products, inventory, orders, discounts, and invoices across 4 major marketplaces (Digikala, Snapp, Basalam, Tapsi).</li>
+          <li>Engineered a highly concurrent system utilizing ~12 active workers to process and sync data rapidly.</li>
+          <li>Implemented a multi-strategy pricing engine (Automatic, Competitive, Takeover) with a real-time competitor price crawler that adjusts prices optimally until a hard stop-loss limit is reached.</li>
+          <li>Built a smart product mapping and recommendation system to link external marketplace listings to internal inventory.</li>
+          <li>Started development of a custom, lightweight ORM to bypass standard ORM overheads and maximize database I/O performance.</li>
+          <li>Created automated financial endpoints for precise profit calculation and reporting.</li>
+        </ul>
+        <div class="stack">
+          <span class="spill">Python</span><span class="spill">Litestar</span>
+          <span class="spill">Taskiq</span><span class="spill">Redis</span><span class="spill">PostgreSQL</span>
+        </div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-title">💰 Digital Gold Trading Platform</div>
+        <ul>
+          <li>Designed a back-to-back automated trading mechanism to execute instant purchases from suppliers upon user trades, entirely eliminating market fluctuation risks.</li>
+          <li>Implemented a robust queue-worker architecture to handle concurrent trading requests reliably and asynchronously.</li>
+          <li>Developed an automated fallback and monitoring system to instantly alert administrators via notifications in case of supplier API failures.</li>
+        </ul>
+        <div class="stack">
+          <span class="spill">Python</span><span class="spill">FastAPI</span>
+          <span class="spill">PostgreSQL</span><span class="spill">RabbitMQ</span><span class="spill">Redis</span>
+        </div>
+      </div>
+
+      <div class="proj">
+        <div class="proj-title">💍 Gold &amp; Jewelry E-commerce</div>
+        <ul>
+          <li>Built an automated, real-time gold pricing system updating store product prices based on live market rates.</li>
+          <li>Designed a smart product categorization engine using heuristic algorithms combined with manual admin overrides.</li>
+          <li>Engineered the data collection and scoring pipeline to serve as the foundation for migrating to a Neural Network (NN) based categorization system in the future.</li>
+        </ul>
+        <div class="stack">
+          <span class="spill">Python</span><span class="spill">FastAPI</span>
+          <span class="spill">PostgreSQL</span><span class="spill">Redis</span><span class="spill">Celery</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPETITIVE PROGRAMMING -->
+  <section class="rv" id="cp">
+    <div class="sec-head">
+      <span class="sec-ico">⚔️</span>
+      <span class="sec-title">Competitive Programming</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="cp-grid">
+      <div class="cp-card">
+        <div class="cp-icon">🥇</div>
+        <div class="cp-info">
+          <div class="cp-title">Hamkad 5</div>
+          <div class="cp-sub">Software Engineering Track &mdash; Quera</div>
+          <div class="cp-score">Participated &amp; Competed</div>
+        </div>
+      </div>
+      <div class="cp-card">
+        <div class="cp-icon">🎯</div>
+        <div class="cp-info">
+          <div class="cp-title">Technology Olympics 2024</div>
+          <div class="cp-sub">Algorithm Track</div>
+          <div class="cp-score">Score: <span class="score-num">4.5</span></div>
+        </div>
+      </div>
+      <div class="cp-card">
+        <div class="cp-icon">⚡</div>
+        <div class="cp-info">
+          <div class="cp-title">Algorithm Technology</div>
+          <div class="cp-sub">Quera Competitive Arena</div>
+          <div class="cp-score">Score: <span class="score-num">8.9</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="cp-note">
+      Years of competitive programming have shaped a deep intuition for optimal
+      algorithm design and data structures — a mindset that directly translates
+      into how production systems get architected and tuned for performance.
+    </div>
+  </section>
+
+  <!-- COURSES -->
+  <section class="rv" id="courses">
+    <div class="sec-head">
+      <span class="sec-ico">📜</span>
+      <span class="sec-title">Courses &amp; Certifications</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="course-list">
+      <div class="course-card">
+        <div class="course-left">
+          <div class="course-title">Advanced Algorithms &amp; Data Structures</div>
+          <div class="course-provider">Quera — Academic Track</div>
+        </div>
+        <div class="course-grade perfect">Perfect Score ✓</div>
+      </div>
+      <div class="course-card">
+        <div class="course-left">
+          <div class="course-title">Advanced Python Programming</div>
+          <div class="course-provider">Quera — Academic Track</div>
+        </div>
+        <div class="course-grade perfect">Perfect Score ✓</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOFT SKILLS -->
+  <section class="rv" id="softskills">
+    <div class="sec-head">
+      <span class="sec-ico">🧠</span>
+      <span class="sec-title">Soft Skills</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="tags">
+      <span class="tag soft">Problem-Solving</span>
+      <span class="tag soft">Perseverance</span>
+      <span class="tag soft">Teamwork</span>
+      <span class="tag soft">Teaching Ability</span>
+      <span class="tag soft">Active Listening</span>
+      <span class="tag soft">Emotional Intelligence</span>
+      <span class="tag soft">Self-Awareness</span>
+      <span class="tag soft">Confidence</span>
+    </div>
+  </section>
+
+  <section class="rv" id="education">
+    <div class="sec-head">
+      <span class="sec-ico">🎓</span>
+      <span class="sec-title">Education</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="card">
+      <div class="card-row">
+        <span class="card-title">Bachelor of Science in Computer Science</span>
+        <span class="badge">2023 – 2027</span>
+      </div>
+      <div class="card-sub">The Islamic Azad University, Central Tehran</div>
+    </div>
+  </section>
+
+  <section class="rv">
+    <div class="sec-head">
+      <span class="sec-ico">🌐</span>
+      <span class="sec-title">Languages</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="grid2">
+      <div class="mini-card">
+        <div class="mini-title">Persian</div>
+        <div class="mini-sub">Native</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title">English</div>
+        <div class="mini-sub">Professional Working Proficiency</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rv" id="interests">
+    <div class="sec-head">
+      <span class="sec-ico">✨</span>
+      <span class="sec-title">Interests</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="int-grid">
+      <div class="int-card"><span class="int-icon">🦋</span><div class="int-label">Butterflies</div></div>
+      <div class="int-card"><span class="int-icon">👑</span><div class="int-label">Crown</div></div>
+      <div class="int-card"><span class="int-icon">🥊</span><div class="int-label">Boxing</div></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <span class="fbfly">🦋</span>
+  Pouya Sadeghi &copy; 2025 &mdash; Backend Developer
+</footer>
+
+<script>
+// ── Cursor glow ──────────────────────────────────────────────────────────────
+const glow = document.getElementById('glow');
+document.addEventListener('mousemove', e => {
+  glow.style.left = e.clientX + 'px';
+  glow.style.top  = e.clientY + 'px';
+});
+
+// ── Particle canvas ───────────────────────────────────────────────────────────
+const pcv = document.getElementById('bgCanvas');
+const pcx = pcv.getContext('2d');
+
+function resizeAll() {
+  pcv.width  = bfcv.width  = innerWidth;
+  pcv.height = bfcv.height = innerHeight;
+}
+
+const PTS = Array.from({length: 90}, () => ({
+  x: Math.random() * innerWidth,
+  y: Math.random() * innerHeight,
+  r: Math.random() * 1.4 + .3,
+  vy: -(Math.random() * .25 + .05),
+  vx: (Math.random() - .5) * .18,
+  o: Math.random() * .45 + .1,
+}));
+
+(function drawPts() {
+  pcx.clearRect(0, 0, pcv.width, pcv.height);
+  PTS.forEach(p => {
+    pcx.beginPath();
+    pcx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    pcx.fillStyle = `rgba(96,165,250,${p.o})`;
+    pcx.fill();
+    p.y += p.vy; p.x += p.vx;
+    if (p.y < -4) { p.y = pcv.height + 4; p.x = Math.random() * pcv.width; }
+    if (p.x < 0 || p.x > pcv.width) p.vx *= -1;
+  });
+  requestAnimationFrame(drawPts);
+})();
+
+// ── Butterfly canvas ──────────────────────────────────────────────────────────
+const bfcv = document.getElementById('bfCanvas');
+const bfx  = bfcv.getContext('2d');
+resizeAll();
+window.addEventListener('resize', resizeAll);
+
+class Butterfly {
+  constructor(W, H) {
+    this.W     = W;
+    this.x     = -120;
+    this.baseY = H * (0.08 + Math.random() * 0.80);
+    this.y     = this.baseY;
+    this.s     = 28 + Math.random() * 38;        // wing span 28–66 px
+    this.vx    = 55  + Math.random() * 75;       // horizontal speed px/s
+    this.flapA = Math.random() * Math.PI * 2;
+    this.flapV = 5   + Math.random() * 6;        // flap speed rad/s
+    this.waveA = Math.random() * Math.PI * 2;
+    this.waveV = 1.2 + Math.random() * 1.2;
+    this.waveAmp = 18 + Math.random() * 28;
+    this.hue   = 200 + Math.random() * 55;       // deep-blue range
+    this.alpha = 0;
+  }
+
+  update(dt) {
+    this.flapA += this.flapV * dt;
+    this.waveA += this.waveV * dt;
+    this.x     += this.vx   * dt;
+    this.y      = this.baseY + Math.sin(this.waveA) * this.waveAmp;
+
+    const fade = 110;
+    if      (this.x < fade)        this.alpha = (this.x / fade) * 0.90;
+    else if (this.x > this.W - fade) this.alpha = ((this.W - this.x) / fade) * 0.90;
+    else                           this.alpha = 0.90;
+    this.alpha = Math.max(0, this.alpha);
+  }
+
+  draw(ctx) {
+    const { x, y, s, flapA, hue, alpha } = this;
+    if (alpha <= 0) return;
+
+    // wings open fraction 0→1 (abs-sin gives smooth open/close)
+    const flap = Math.abs(Math.sin(flapA));
+    // slight body tilt follows wave direction
+    const tilt = Math.cos(this.waveA) * 0.14;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(tilt);
+    ctx.globalAlpha = alpha;
+
+    // Right side wings
+    ctx.save();
+    ctx.scale(flap, 1);
+    this._wings(ctx, s, hue);
+    ctx.restore();
+
+    // Left side wings (mirror)
+    ctx.save();
+    ctx.scale(-flap, 1);
+    this._wings(ctx, s, hue);
+    ctx.restore();
+
+    this._body(ctx, s, hue);
+    this._antennae(ctx, s, hue, flap);
+    ctx.restore();
+  }
+
+  // Draw one side of wings (right side; left = scaleX mirror)
+  _wings(ctx, s, h) {
+    // ─ Upper wing ─
+    const ug = ctx.createLinearGradient(0, -s * 0.52, s * 0.65, s * 0.10);
+    ug.addColorStop(0.00, `hsla(${h},     94%, 76%, 0.95)`);
+    ug.addColorStop(0.45, `hsla(${h + 12},82%, 58%, 0.88)`);
+    ug.addColorStop(1.00, `hsla(${h + 28},65%, 36%, 0.68)`);
+
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.06);
+    ctx.bezierCurveTo(s*.10, -s*.50,  s*.54, -s*.52,  s*.60, -s*.08);
+    ctx.bezierCurveTo(s*.50,  s*.13,  s*.10,  s*.09,  0, -s * 0.06);
+    ctx.fillStyle = ug;
+    ctx.fill();
+
+    // upper wing cell highlight
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.06);
+    ctx.bezierCurveTo(s*.06, -s*.30,  s*.30, -s*.36,  s*.36, -s*.10);
+    ctx.bezierCurveTo(s*.28,  s*.04,  s*.06,  s*.02,  0, -s * 0.06);
+    ctx.fillStyle = `hsla(${h - 10}, 100%, 90%, 0.13)`;
+    ctx.fill();
+
+    // veins
+    ctx.strokeStyle = `hsla(${h + 18}, 60%, 92%, 0.22)`;
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(0, -s*.06);
+    ctx.quadraticCurveTo(s*.22, -s*.32, s*.54, -s*.22);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(s*.12, -s*.18);
+    ctx.quadraticCurveTo(s*.30, -s*.08, s*.54, -s*.04);
+    ctx.stroke();
+
+    // small iridescent spot
+    ctx.beginPath();
+    ctx.ellipse(s*.33, -s*.23, s*.07, s*.05, -0.4, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${h + 40}, 85%, 88%, 0.18)`;
+    ctx.fill();
+
+    // wing edge
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.06);
+    ctx.bezierCurveTo(s*.10, -s*.50,  s*.54, -s*.52,  s*.60, -s*.08);
+    ctx.bezierCurveTo(s*.50,  s*.13,  s*.10,  s*.09,  0, -s * 0.06);
+    ctx.strokeStyle = `hsla(${h + 25}, 50%, 28%, 0.28)`;
+    ctx.lineWidth = 0.6;
+    ctx.stroke();
+
+    // ─ Lower wing ─
+    const lg = ctx.createLinearGradient(0, 0, s * 0.48, s * 0.58);
+    lg.addColorStop(0.00, `hsla(${h + 10}, 90%, 68%, 0.90)`);
+    lg.addColorStop(0.55, `hsla(${h + 22}, 76%, 52%, 0.82)`);
+    lg.addColorStop(1.00, `hsla(${h + 38}, 62%, 34%, 0.60)`);
+
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.06);
+    ctx.bezierCurveTo(s*.09,  s*.08,  s*.52, s*.02,  s*.46, s*.40);
+    ctx.bezierCurveTo(s*.41,  s*.62,  s*.04, s*.50,  0, -s * 0.06);
+    ctx.fillStyle = lg;
+    ctx.fill();
+
+    // lower vein
+    ctx.strokeStyle = `hsla(${h + 18}, 60%, 92%, 0.18)`;
+    ctx.lineWidth = 0.65;
+    ctx.beginPath();
+    ctx.moveTo(0, -s*.06);
+    ctx.quadraticCurveTo(s*.20, s*.26, s*.42, s*.34);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.06);
+    ctx.bezierCurveTo(s*.09, s*.08, s*.52, s*.02, s*.46, s*.40);
+    ctx.bezierCurveTo(s*.41, s*.62, s*.04, s*.50, 0, -s * 0.06);
+    ctx.strokeStyle = `hsla(${h + 28}, 50%, 26%, 0.25)`;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+
+  _body(ctx, s, h) {
+    const bg = ctx.createLinearGradient(-s*.04, -s*.44, s*.04, s*.34);
+    bg.addColorStop(0.0, `hsla(${h + 10}, 55%, 92%, 1)`);
+    bg.addColorStop(0.5, `hsla(${h + 20}, 65%, 70%, 1)`);
+    bg.addColorStop(1.0, `hsla(${h + 30}, 55%, 42%, 1)`);
+    ctx.beginPath();
+    ctx.ellipse(0, -s * 0.05, s * 0.055, s * 0.40, 0, 0, Math.PI * 2);
+    ctx.fillStyle = bg;
+    ctx.fill();
+    ctx.strokeStyle = `hsla(${h}, 40%, 42%, 0.45)`;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    // head
+    ctx.beginPath();
+    ctx.arc(0, -s * 0.44, s * 0.072, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${h + 10}, 62%, 80%, 0.96)`;
+    ctx.fill();
+  }
+
+  _antennae(ctx, s, h, flap) {
+    // antennae tips lean in when wings are folded (flap≈0)
+    const lean = (1 - flap) * s * 0.07;
+    ctx.strokeStyle = `hsla(${h}, 60%, 72%, 0.80)`;
+    ctx.lineWidth = 0.85;
+
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.02, -s * 0.44);
+    ctx.quadraticCurveTo(-s * 0.18 - lean, -s * 0.66, -s * 0.25 - lean, -s * 0.86);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(-s * 0.25 - lean, -s * 0.86, s * 0.043, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${h}, 85%, 84%, 0.92)`;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(s * 0.02, -s * 0.44);
+    ctx.quadraticCurveTo(s * 0.18 + lean, -s * 0.66, s * 0.25 + lean, -s * 0.86);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(s * 0.25 + lean, -s * 0.86, s * 0.043, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${h}, 85%, 84%, 0.92)`;
+    ctx.fill();
+  }
+
+  done() { return this.x > this.W + 140; }
+}
+
+// ── Animation loop ────────────────────────────────────────────────────────────
+const bflies = [];
+let lastT = 0;
+
+function spawnBf() {
+  bflies.push(new Butterfly(bfcv.width, bfcv.height));
+}
+
+// Staggered initial burst
+for (let i = 0; i < 5; i++) setTimeout(spawnBf, i * 1400);
+setInterval(spawnBf, 3000);
+
+(function loop(ts) {
+  const dt = Math.min((ts - lastT) / 1000, 0.05);
+  lastT = ts;
+
+  bfx.clearRect(0, 0, bfcv.width, bfcv.height);
+
+  for (let i = bflies.length - 1; i >= 0; i--) {
+    bflies[i].update(dt);
+    bflies[i].draw(bfx);
+    if (bflies[i].done()) bflies.splice(i, 1);
+  }
+
+  requestAnimationFrame(loop);
+})(0);
+
+// ── Scroll reveal ─────────────────────────────────────────────────────────────
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+  });
+}, { threshold: .1 });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
