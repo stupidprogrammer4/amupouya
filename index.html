@@ -1,945 +1,308 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pouya Sadeghi — Backend Developer</title>
-  <style>
-    :root {
-      --bg0: #020c1b;
-      --bg2: #0d1f3c;
-      --blue0: #0a1e40;
-      --blue1: #163566;
-      --blue2: #1d4ed8;
-      --blue3: #3b82f6;
-      --blue4: #60a5fa;
-      --text0: #e2e8f0;
-      --text1: #94a3b8;
-      --text2: #64748b;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg0);
-      color: var(--text0);
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
-
-    #bgCanvas, #bfCanvas {
-      position: fixed; inset: 0; pointer-events: none;
-    }
-    #bgCanvas { z-index: 0; }
-    #bfCanvas  { z-index: 1; }
-
-    #glow {
-      position: fixed; width: 400px; height: 400px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(59,130,246,.07) 0%, transparent 70%);
-      pointer-events: none; transform: translate(-50%,-50%); z-index: 2;
-      transition: left .08s, top .08s;
-    }
-
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-      display: flex; justify-content: space-between; align-items: center;
-      padding: .75rem 2rem;
-      background: rgba(2,12,27,.82);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(29,78,216,.25);
-    }
-    .nav-brand { font-weight: 700; color: var(--blue4); font-size: .95rem; letter-spacing: .04em; }
-    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
-    .nav-links a { color: var(--text1); text-decoration: none; font-size: .82rem;
-      letter-spacing: .05em; text-transform: uppercase; transition: color .25s; }
-    .nav-links a:hover { color: var(--blue4); }
-
-    .wrap { position: relative; z-index: 10; max-width: 860px; margin: 0 auto; padding: 0 1.5rem 4rem; }
-
-    .hero { text-align: center; padding: 7rem 0 3.5rem; }
-    .hero-crown {
-      display: inline-block; font-size: 3.5rem;
-      animation: crownFloat 3s ease-in-out infinite;
-      filter: drop-shadow(0 0 12px rgba(59,130,246,.6));
-    }
-    @keyframes crownFloat {
-      0%,100% { transform: translateY(0);    filter: drop-shadow(0 0 10px rgba(59,130,246,.5)); }
-      50%      { transform: translateY(-10px); filter: drop-shadow(0 0 22px rgba(96,165,250,.9)); }
-    }
-    .hero h1 {
-      margin-top: 1rem;
-      font-size: clamp(2.4rem, 6vw, 4.2rem);
-      font-weight: 800; letter-spacing: -.02em;
-      background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 40%, #dbeafe 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      animation: fadeUp .7s ease both;
-    }
-    .hero-role {
-      margin-top: .4rem; font-size: 1.1rem; letter-spacing: .18em;
-      text-transform: uppercase; color: var(--blue3);
-      animation: fadeUp .7s .15s ease both;
-    }
-    .hero-bar {
-      width: 100px; height: 2px; margin: 1.4rem auto;
-      background: linear-gradient(90deg, transparent, var(--blue3), transparent);
-      animation: fadeUp .7s .25s ease both;
-    }
-    .contacts {
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 1.2rem;
-      animation: fadeUp .7s .35s ease both;
-    }
-    .contacts a, .contacts span {
-      display: flex; align-items: center; gap: .45rem;
-      color: var(--text1); text-decoration: none; font-size: .88rem; transition: color .25s;
-    }
-    .contacts a:hover { color: var(--blue4); }
-    .contacts .ico { color: var(--blue3); font-size: 1rem; }
-
-    section { margin: 3rem 0; }
-    .sec-head { display: flex; align-items: center; gap: .9rem; margin-bottom: 1.4rem; }
-    .sec-ico { font-size: 1.3rem; }
-    .sec-title {
-      font-size: .8rem; font-weight: 700; letter-spacing: .22em;
-      text-transform: uppercase; color: var(--blue4); white-space: nowrap;
-    }
-    .sec-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(29,78,216,.5), transparent); }
-
-    .summary {
-      background: var(--bg2); border: 1px solid var(--blue0);
-      border-left: 3px solid var(--blue2); border-radius: 0 12px 12px 0;
-      padding: 1.4rem 1.6rem; color: var(--text1); font-size: .93rem; line-height: 1.8;
-    }
-
-    .tags { display: flex; flex-wrap: wrap; gap: .55rem; }
-    .tag {
-      background: rgba(13,35,85,.65); border: 1px solid rgba(29,78,216,.5);
-      color: var(--blue4); padding: .35rem .95rem; border-radius: 999px;
-      font-size: .82rem; font-weight: 500; cursor: default; transition: all .25s;
-    }
-    .tag:hover {
-      background: rgba(29,78,216,.22); border-color: var(--blue3); color: #fff;
-      transform: translateY(-2px); box-shadow: 0 4px 14px rgba(59,130,246,.2);
-    }
-
-    .card {
-      background: var(--bg2); border: 1px solid var(--blue0);
-      border-radius: 14px; padding: 1.4rem 1.6rem; margin-bottom: 1.1rem;
-      position: relative; overflow: hidden;
-      transition: transform .3s, box-shadow .3s, border-color .3s;
-    }
-    .card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--blue2), var(--blue4));
-      transform: scaleX(0); transform-origin: left; transition: transform .35s;
-    }
-    .card:hover { transform: translateY(-3px); border-color: var(--blue1);
-      box-shadow: 0 10px 36px rgba(29,78,216,.18); }
-    .card:hover::before { transform: scaleX(1); }
-
-    .card-row {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      flex-wrap: wrap; gap: .5rem; margin-bottom: .25rem;
-    }
-    .card-title { font-size: 1.05rem; font-weight: 700; }
-    .badge {
-      font-size: .78rem; color: var(--blue4);
-      background: rgba(29,78,216,.12); border: 1px solid rgba(96,165,250,.2);
-      padding: .18rem .65rem; border-radius: 999px; white-space: nowrap;
-    }
-    .card-sub { color: var(--blue3); font-weight: 600; font-size: .9rem; margin-bottom: .9rem; }
-
-    .proj {
-      background: rgba(7,18,37,.7); border: 1px solid rgba(22,53,102,.5);
-      border-radius: 9px; padding: .9rem 1.1rem; margin-top: .9rem;
-    }
-    .proj-title {
-      font-size: .88rem; font-weight: 600; color: var(--blue4);
-      display: flex; align-items: center; gap: .4rem; margin-bottom: .6rem;
-    }
-    .proj ul { list-style: none; padding: 0; }
-    .proj ul li {
-      font-size: .83rem; color: var(--text1); padding: .28rem 0 .28rem 1.2rem;
-      position: relative; line-height: 1.55;
-    }
-    .proj ul li::before {
-      content: '▸'; position: absolute; left: 0; color: var(--blue3);
-      font-size: .7rem; top: .38rem;
-    }
-    .stack { margin-top: .7rem; display: flex; flex-wrap: wrap; gap: .3rem; }
-    .spill {
-      display: inline-block; background: rgba(29,78,216,.1);
-      border: 1px solid rgba(96,165,250,.2); color: var(--blue4);
-      padding: .12rem .55rem; border-radius: 999px; font-size: .74rem;
-    }
-
-    .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 1rem; }
-    .mini-card {
-      background: var(--bg2); border: 1px solid var(--blue0);
-      border-radius: 11px; padding: 1rem 1.2rem; text-align: center; transition: all .3s;
-    }
-    .mini-card:hover { border-color: var(--blue2); box-shadow: 0 4px 18px rgba(29,78,216,.18); }
-    .mini-title { font-weight: 700; font-size: .95rem; }
-    .mini-sub { font-size: .78rem; color: var(--blue4); margin-top: .2rem; }
-
-    .int-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 1rem; }
-    .int-card {
-      background: var(--bg2); border: 1px solid var(--blue0);
-      border-radius: 14px; padding: 1.6rem 1rem; text-align: center;
-      cursor: default; transition: all .3s;
-    }
-    .int-card:hover {
-      transform: translateY(-6px); border-color: var(--blue2);
-      box-shadow: 0 10px 28px rgba(29,78,216,.25);
-    }
-    .int-icon { font-size: 2.4rem; display: block; margin-bottom: .4rem; }
-    .int-label { font-size: .8rem; color: var(--text1); font-weight: 500; }
-
-    footer {
-      text-align: center; padding: 2.5rem 1rem 3rem;
-      border-top: 1px solid rgba(22,53,102,.3);
-      color: var(--text2); font-size: .82rem; margin-top: 3rem;
-    }
-    footer .fbfly { font-size: 1.8rem; display: block; margin-bottom: .5rem;
-      animation: crownFloat 4s ease-in-out infinite; }
-
-    /* ── SKILLS GROUPED ── */
-    .skills-block { display: flex; flex-direction: column; gap: 1rem; }
-    .skills-group-label {
-      font-size: .72rem; font-weight: 700; letter-spacing: .18em;
-      text-transform: uppercase; color: var(--text2); margin-bottom: .25rem;
-    }
-
-    /* ── COMPETITIVE PROGRAMMING ── */
-    .cp-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
-      gap: 1rem; margin-bottom: 1rem;
-    }
-    .cp-card {
-      background: var(--bg2); border: 1px solid var(--blue0);
-      border-radius: 12px; padding: 1.1rem 1.3rem;
-      display: flex; align-items: flex-start; gap: 1rem;
-      transition: all .3s;
-    }
-    .cp-card:hover { border-color: var(--blue2); transform: translateY(-2px);
-      box-shadow: 0 6px 22px rgba(29,78,216,.18); }
-    .cp-icon { font-size: 1.8rem; flex-shrink: 0; }
-    .cp-title { font-weight: 700; font-size: .92rem; margin-bottom: .18rem; }
-    .cp-sub { font-size: .78rem; color: var(--text2); margin-bottom: .3rem; }
-    .cp-score { font-size: .82rem; color: var(--blue4); }
-    .score-num { font-weight: 700; font-size: 1rem; color: var(--blue3); }
-    .cp-note {
-      font-size: .84rem; color: var(--text1); line-height: 1.7;
-      background: rgba(13,31,60,.6); border: 1px solid var(--blue0);
-      border-radius: 10px; padding: 1rem 1.3rem;
-    }
-
-    /* ── COURSES ── */
-    .course-list { display: flex; flex-direction: column; gap: .75rem; }
-    .course-card {
-      background: var(--bg2); border: 1px solid var(--blue0);
-      border-radius: 10px; padding: 1rem 1.3rem;
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: .7rem; transition: all .3s;
-    }
-    .course-card:hover { border-color: var(--blue1); box-shadow: 0 4px 16px rgba(29,78,216,.15); }
-    .course-title { font-weight: 600; font-size: .92rem; }
-    .course-provider { font-size: .78rem; color: var(--text2); margin-top: .18rem; }
-    .course-grade {
-      font-size: .78rem; font-weight: 700; padding: .25rem .8rem;
-      border-radius: 999px; white-space: nowrap;
-    }
-    .course-grade.perfect {
-      background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.35);
-      color: #34d399;
-    }
-
-    /* ── WHAT I DO ── */
-    .wid-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1rem;
-    }
-    .wid-card {
-      background: var(--bg2); border: 1px solid var(--blue0);
-      border-radius: 13px; padding: 1.3rem 1.4rem; transition: all .3s;
-    }
-    .wid-card:hover {
-      border-color: var(--blue2); transform: translateY(-3px);
-      box-shadow: 0 8px 26px rgba(29,78,216,.18);
-    }
-    .wid-icon { font-size: 1.7rem; margin-bottom: .55rem; }
-    .wid-title { font-weight: 700; font-size: .92rem; color: var(--text0); margin-bottom: .4rem; }
-    .wid-desc { font-size: .80rem; color: var(--text1); line-height: 1.6; }
-
-    /* ── SOFT SKILLS ── */
-    .tag.soft {
-      background: rgba(30,10,60,.55); border-color: rgba(139,92,246,.4);
-      color: #c4b5fd;
-    }
-    .tag.soft:hover { background: rgba(139,92,246,.2); border-color: #a78bfa; color: #fff; }
-
-    .rv { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
-    .rv.in { opacity: 1; transform: translateY(0); }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 580px) {
-      .nav-links { display: none; }
-      .hero { padding-top: 7rem; }
-      .card-row { flex-direction: column; }
-    }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#020805">
+  <meta name="description" content="Pouya Sadeghi — Backend and systems engineer building reliable distributed services, commerce infrastructure and open-source Python tooling.">
+  <meta property="og:title" content="Pouya Sadeghi — Backend & Systems Engineer">
+  <meta property="og:description" content="Production backend systems and open-source Python infrastructure, built for correctness under load.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/css/styles.css">
+  <title>Pouya Sadeghi — Backend & Systems Engineer</title>
 </head>
 <body>
+  <canvas id="rain" aria-hidden="true"></canvas>
 
-<div id="glow"></div>
-<canvas id="bgCanvas"></canvas>
-<canvas id="bfCanvas"></canvas>
-
-<nav>
-  <div class="nav-brand">🦋 Pouya Sadeghi</div>
-  <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#experience">Experience</a></li>
-    <li><a href="#cp">Competitions</a></li>
-    <li><a href="#education">Education</a></li>
-    <li><a href="#interests">Interests</a></li>
-    <li><a href="https://x.com/amupouya" target="_blank" rel="noopener" style="color:var(--blue3)">𝕏</a></li>
-  </ul>
-</nav>
-
-<div class="wrap">
-
-  <section class="hero" id="about">
-    <div class="hero-crown">👑</div>
-    <h1>Pouya Sadeghi</h1>
-    <div class="hero-role">Backend Developer</div>
-    <div class="hero-bar"></div>
-    <div class="contacts">
-      <a href="mailto:ilovelinux764@gmail.com">
-        <span class="ico">✉</span> ilovelinux764@gmail.com
+  <header class="site-header">
+    <nav class="nav shell" aria-label="Main navigation">
+      <a class="brand" href="#top" aria-label="Pouya Sadeghi, home">
+        <span class="mark">PS</span>
+        <span>pouya<span class="cursor">_</span></span>
       </a>
-      <span><span class="ico">📞</span> +98 939 122 6450</span>
-      <a href="https://github.com/stupidprogrammer4" target="_blank" rel="noopener">
-        <span class="ico">⌥</span> github.com/stupidprogrammer4
-      </a>
-      <a href="https://quera.org/profile/googooli" target="_blank" rel="noopener">
-        <span class="ico">🏆</span> quera.org/amupouya
-      </a>
-      <a href="https://x.com/amupouya" target="_blank" rel="noopener">
-        <span class="ico">𝕏</span> @amupouya
-      </a>
-    </div>
-  </section>
+      <button class="menu" type="button" aria-expanded="false" aria-controls="links" aria-label="Toggle navigation">☰</button>
+      <ul class="links" id="links">
+        <li><a href="#experience">Goldis</a></li>
+        <li><a href="#projects">Open source</a></li>
+        <li><a href="#github">GitHub</a></li>
+        <li><a href="#stack">Expertise</a></li>
+        <li><a class="connect" href="#contact">Connect</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  <section class="rv">
-    <div class="sec-head">
-      <span class="sec-ico">🦋</span>
-      <span class="sec-title">Professional Summary</span>
-      <div class="sec-line"></div>
-    </div>
-    <div class="summary">
-      Backend Developer based in <strong style="color:var(--blue4)">Tehran</strong> with a
-      passion for squeezing every bit of performance out of a system. I care deeply about
-      algorithm correctness and low-latency design — two habits forged through years of
-      competitive programming that now shape how I build production software.
-      <br><br>
-      At <strong style="color:var(--blue4)">Goldis</strong> I architect systems that sync
-      thousands of products across Iran's largest marketplaces in real-time, handle
-      automated gold trading without missing a millisecond, and price inventory intelligently
-      using multi-strategy engines. I prefer writing the right tool for the job — including
-      building a custom ORM from scratch when standard ones get in the way.
-      <br><br>
-      Currently studying Computer Science at IAU Central Tehran (2023–2027), exploring
-      <strong style="color:var(--blue4)">Rust</strong> for systems programming, and
-      occasionally shipping 2D games with SDL2.
-    </div>
-  </section>
+  <main>
+    <section class="hero" id="top">
+      <div class="shell hero-grid">
+        <div>
+          <div class="kicker">Backend developer · Tehran, Iran</div>
+          <h1>Pouya<br><span class="outline">Sadeghi</span></h1>
+          <p class="lead">
+            I design backend systems that stay correct under concurrency—from marketplace
+            synchronization and real-time gold trading to reusable, typed Python infrastructure.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="#experience">View production work</a>
+            <a class="button ghost" href="https://www.linkedin.com/in/pouya-sadeghi-5a2179250" target="_blank" rel="noopener">LinkedIn ↗</a>
+          </div>
+        </div>
 
-  <!-- WHAT I DO -->
-  <section class="rv" id="whatido">
-    <div class="sec-head">
-      <span class="sec-ico">🚀</span>
-      <span class="sec-title">What I Do</span>
-      <div class="sec-line"></div>
-    </div>
-    <div class="wid-grid">
-      <div class="wid-card">
-        <div class="wid-icon">🔧</div>
-        <div class="wid-title">High-Performance APIs</div>
-        <div class="wid-desc">Build low-latency services with FastAPI and Litestar, optimized for throughput and minimal overhead at every layer.</div>
+        <aside class="terminal" aria-label="Developer profile">
+          <div class="term-bar">
+            <span>pouya@arch: ~/profile</span>
+            <span class="dots">● ● ●</span>
+          </div>
+          <div class="term-body">
+            <p><span class="prompt">$</span> whoami</p>
+            <p>role = <span class="value">"Backend Developer"</span></p>
+            <p>company = <span class="value">"Goldis"</span></p>
+            <p>focus = [</p>
+            <p>&nbsp; <span class="value">"distributed systems"</span>,</p>
+            <p>&nbsp; <span class="value">"low-latency design"</span>,</p>
+            <p>&nbsp; <span class="value">"developer tooling"</span></p>
+            <p>]</p>
+            <p class="comment"># Build the tool the problem actually needs.</p>
+            <span class="status"><i></i> open_to_collaboration</span>
+          </div>
+        </aside>
       </div>
-      <div class="wid-card">
-        <div class="wid-icon">🔄</div>
-        <div class="wid-title">Real-Time Sync Engines</div>
-        <div class="wid-desc">Design concurrent worker systems that synchronize inventory, orders and pricing across multiple platforms without losing a beat.</div>
-      </div>
-      <div class="wid-card">
-        <div class="wid-icon">📊</div>
-        <div class="wid-title">Automated Pricing Logic</div>
-        <div class="wid-desc">Implement multi-strategy pricing engines with real-time competitor crawling, stop-loss guards and live market rate feeds.</div>
-      </div>
-      <div class="wid-card">
-        <div class="wid-icon">⚙️</div>
-        <div class="wid-title">Algorithm Design</div>
-        <div class="wid-desc">Apply competitive-programming thinking to production problems — heuristics, optimal search, and data structure choices that actually matter.</div>
-      </div>
-      <div class="wid-card">
-        <div class="wid-icon">🗄️</div>
-        <div class="wid-title">Distributed Systems</div>
-        <div class="wid-desc">Wire together PostgreSQL, Redis, RabbitMQ and Elasticsearch into reliable, message-driven architectures built for scale.</div>
-      </div>
-      <div class="wid-card">
-        <div class="wid-icon">🎮</div>
-        <div class="wid-title">2D Game Development</div>
-        <div class="wid-desc">Hobby projects in C with SDL2 — because writing a renderer from scratch keeps low-level instincts sharp.</div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="rv" id="skills">
-    <div class="sec-head">
-      <span class="sec-ico">⚡</span>
-      <span class="sec-title">Technical Skills</span>
-      <div class="sec-line"></div>
+    <div class="ticker" aria-hidden="true">
+      <div class="track">
+        <span>Python 3.13</span><span>FastAPI</span><span>PostgreSQL</span><span>Redis</span>
+        <span>Taskiq</span><span>RabbitMQ</span><span>Elasticsearch</span><span>Concurrency</span>
+        <span>Python 3.13</span><span>FastAPI</span><span>PostgreSQL</span><span>Redis</span>
+        <span>Taskiq</span><span>RabbitMQ</span><span>Elasticsearch</span><span>Concurrency</span>
+      </div>
     </div>
-    <div class="skills-block">
-      <div class="skills-group-label">Backend &amp; Systems</div>
-      <div class="tags">
-        <span class="tag">Python (FastAPI, Litestar, Flask)</span>
-        <span class="tag">Go (Fiber, GORM)</span>
-        <span class="tag">C / C++ (STL)</span>
-        <span class="tag">Rust</span>
-        <span class="tag">Django</span>
+
+    <section class="section shell reveal" aria-label="GitHub overview">
+      <div class="stats">
+        <div class="stat"><span class="number" data-repos>23</span><span class="label">Public repositories</span></div>
+        <div class="stat"><span class="number" data-followers>13</span><span class="label">GitHub followers</span></div>
+        <div class="stat"><span class="number" data-following>17</span><span class="label">Following</span></div>
+        <div class="stat"><span class="number">2021</span><span class="label">Building in public since</span></div>
+      </div>
+    </section>
+
+    <section class="section shell" id="identity">
+      <div class="section-head reveal">
+        <div>
+          <small>Profile, rendered as code</small>
+          <h2>The engineer behind the systems.</h2>
+          <p class="section-copy">A terminal-style snapshot of how I work: performance-aware, detail-oriented and comfortable moving between architecture and implementation.</p>
+        </div>
+        <div class="index">00</div>
+      </div>
+      <div class="identity-panel reveal">
+        <img src="static/images/identity.svg" width="1000" height="992" alt="Matrix terminal showing Pouya Sadeghi's profile with an ASCII butterfly" loading="lazy">
+        <div class="identity-note"><span>source: github/profile/identity.svg</span><span>signal: verified</span></div>
+      </div>
+    </section>
+
+    <section class="section shell" id="experience">
+      <div class="section-head reveal">
+        <div>
+          <small>Selected production work · Goldis</small>
+          <h2>Backend systems for live commerce.</h2>
+          <p class="section-copy">Three production platforms covering marketplace operations, automated trading and dynamic pricing—designed around concurrency, failure recovery and financial correctness.</p>
+        </div>
+        <div class="index">01</div>
       </div>
 
-      <div class="skills-group-label">Data &amp; Messaging</div>
-      <div class="tags">
-        <span class="tag">PostgreSQL</span>
-        <span class="tag">Redis</span>
-        <span class="tag">RabbitMQ</span>
-        <span class="tag">Elasticsearch</span>
-        <span class="tag">SQLAlchemy</span>
-        <span class="tag">SQLite3</span>
-        <span class="tag">NumPy</span>
-        <span class="tag">Pandas</span>
+      <div class="company-grid">
+        <article class="company-project reveal">
+          <div class="company-project-header">
+            <div>
+              <div class="project-id">system_01 · Commerce infrastructure</div>
+              <h3>Multi-Platform Sync &amp; Pricing Engine</h3>
+            </div>
+            <span class="status"><i></i> production</span>
+          </div>
+          <ul>
+            <li>Synchronizes products, inventory, orders, discounts and invoices across Digikala, Snapp, Basalam and Tapsi.</li>
+            <li>Coordinates roughly 12 concurrent workers to process and propagate marketplace data with low delay.</li>
+            <li>Supports Automatic, Competitive and Takeover pricing with live competitor crawling and hard stop-loss limits.</li>
+            <li>Matches external marketplace listings to internal inventory through product mapping and recommendations.</li>
+            <li>Includes a lightweight custom ORM path for database-intensive operations where standard abstractions add measurable overhead.</li>
+            <li>Provides financial endpoints for profit calculation, settlement and operational reporting.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">Python</span><span class="chip">Litestar</span><span class="chip">Taskiq</span>
+            <span class="chip">PostgreSQL</span><span class="chip">Redis</span>
+          </div>
+        </article>
+
+        <article class="company-project reveal">
+          <div class="company-project-header">
+            <div>
+              <div class="project-id">system_02 · Fintech</div>
+              <h3>Digital Gold Trading Platform</h3>
+            </div>
+          </div>
+          <ul>
+            <li>Executes back-to-back supplier purchases immediately after user trades to reduce exposure to gold-price movement.</li>
+            <li>Uses RabbitMQ and Redis workers for reliable, concurrent and asynchronous trade execution.</li>
+            <li>Detects supplier failures and activates operational fallbacks, monitoring and immediate administrator alerts.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">FastAPI</span><span class="chip">RabbitMQ</span>
+            <span class="chip">Redis</span><span class="chip">PostgreSQL</span>
+          </div>
+        </article>
+
+        <article class="company-project reveal">
+          <div class="company-project-header">
+            <div>
+              <div class="project-id">system_03 · E-commerce</div>
+              <h3>Gold &amp; Jewelry Commerce</h3>
+            </div>
+          </div>
+          <ul>
+            <li>Reprices store inventory automatically from live gold-market rates.</li>
+            <li>Categorizes products through heuristic scoring while preserving explicit administrative control.</li>
+            <li>Collects and scores training data for a future neural-network categorization model.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">FastAPI</span><span class="chip">Celery</span>
+            <span class="chip">Redis</span><span class="chip">Algorithms</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section shell" id="projects">
+      <div class="section-head reveal">
+        <div>
+          <small>Open-source engineering</small>
+          <h2>Infrastructure made reusable.</h2>
+          <p class="section-copy">Frameworks and typed SDKs extracted from recurring backend problems: application structure, provider fragmentation, unreliable payloads and sync/async duplication.</p>
+        </div>
+        <div class="index">02</div>
       </div>
 
-      <div class="skills-group-label">Architecture &amp; Tooling</div>
-      <div class="tags">
-        <span class="tag">Celery / Taskiq</span>
-        <span class="tag">Algorithm Optimization</span>
-        <span class="tag">Distributed Systems</span>
-        <span class="tag">Docker</span>
-        <span class="tag">Git</span>
-        <span class="tag">Linux</span>
-        <span class="tag">SDL2 (2D Graphics)</span>
+      <div class="projects">
+        <a class="project featured reveal" href="https://github.com/stupidprogrammer4/fastamu" target="_blank" rel="noopener">
+          <div class="project-top"><span>Featured · Framework</span><span>↗</span></div>
+          <h3>Fastamu</h3>
+          <p>A convention-driven modular-monolith framework that gives FastAPI a cohesive application architecture, automatic discovery and production infrastructure.</p>
+          <div class="chips"><span class="chip">FastAPI</span><span class="chip">Dishka</span><span class="chip">Taskiq</span><span class="chip">SQLModel</span><span class="chip">CQRS</span></div>
+        </a>
+        <a class="project small reveal" href="https://github.com/stupidprogrammer4/iranian-marketplaces-sdk" target="_blank" rel="noopener">
+          <div class="project-top"><span>SDK · <b data-stars>11</b> ★</span><span>↗</span></div>
+          <h3>Iranian Marketplaces SDK</h3>
+          <p>One typed sync/async interface for Digikala, Snapp, Basalam and Tapsi.</p>
+          <div class="chips"><span class="chip">Python</span><span class="chip">Pydantic</span><span class="chip">httpx</span></div>
+        </a>
+        <a class="project reveal" href="https://github.com/stupidprogrammer4/payment-gateways-sdk" target="_blank" rel="noopener">
+          <div class="project-top"><span>Fintech · SDK</span><span>↗</span></div>
+          <h3>Payment Gateways SDK</h3>
+          <p>A consistent, failure-aware interface for seven Iranian payment gateways with interchangeable synchronous and asynchronous clients.</p>
+          <div class="chips"><span class="chip">Typed</span><span class="chip">Sync / Async</span><span class="chip">7 gateways</span></div>
+        </a>
+        <a class="project reveal" href="https://github.com/stupidprogrammer4/sms-providers-sdk" target="_blank" rel="noopener">
+          <div class="project-top"><span>Messaging · SDK</span><span>↗</span></div>
+          <h3>SMS Providers SDK</h3>
+          <p>A provider-neutral messaging client with strict types, consistent errors and safeguards against credential leakage.</p>
+          <div class="chips"><span class="chip">Python</span><span class="chip">mypy strict</span><span class="chip">AsyncIO</span></div>
+        </a>
+        <a class="project small reveal" href="https://github.com/stupidprogrammer4/zohal-sdk" target="_blank" rel="noopener">
+          <div class="project-top"><span>Identity · SDK</span><span>↗</span></div>
+          <h3>Zohal SDK</h3>
+          <p>Thirty-seven typed banking, identity, utility and credit inquiry endpoints behind one predictable API.</p>
+          <div class="chips"><span class="chip">37 endpoints</span><span class="chip">Validation</span></div>
+        </a>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="rv" id="experience">
-    <div class="sec-head">
-      <span class="sec-ico">💼</span>
-      <span class="sec-title">Work Experience</span>
-      <div class="sec-line"></div>
-    </div>
-    <div class="card">
-      <div class="card-row">
-        <span class="card-title">Backend Developer</span>
-        <span class="badge">August 2025 – Present</span>
+    <section class="section shell" id="github">
+      <div class="section-head reveal">
+        <div>
+          <small>Code, experiments and long-term practice</small>
+          <h2>Public work, in the open.</h2>
+          <p class="section-copy">The full public footprint—from production-minded Python packages to algorithms, data structures, notebooks and low-level experiments.</p>
+        </div>
+        <div class="index">03</div>
       </div>
-      <div class="card-sub">Goldis</div>
 
-      <div class="proj">
-        <div class="proj-title">🔄 Multi-Platform Sync &amp; Pricing Engine</div>
-        <ul>
-          <li>Developed a high-performance synchronization engine for products, inventory, orders, discounts, and invoices across 4 major marketplaces (Digikala, Snapp, Basalam, Tapsi).</li>
-          <li>Engineered a highly concurrent system utilizing ~12 active workers to process and sync data rapidly.</li>
-          <li>Implemented a multi-strategy pricing engine (Automatic, Competitive, Takeover) with a real-time competitor price crawler that adjusts prices optimally until a hard stop-loss limit is reached.</li>
-          <li>Built a smart product mapping and recommendation system to link external marketplace listings to internal inventory.</li>
-          <li>Started development of a custom, lightweight ORM to bypass standard ORM overheads and maximize database I/O performance.</li>
-          <li>Created automated financial endpoints for precise profit calculation and reporting.</li>
-        </ul>
-        <div class="stack">
-          <span class="spill">Python</span><span class="spill">Litestar</span>
-          <span class="spill">Taskiq</span><span class="spill">Redis</span><span class="spill">PostgreSQL</span>
+      <div class="github-profile reveal">
+        <article class="profile-card">
+          <div class="profile-login">@stupidprogrammer4</div>
+          <p class="profile-bio">Backend developer at Goldis · Tehran, Iran</p>
+          <div class="profile-meta">
+            <span><b data-repos>23</b> repositories</span>
+            <span><b data-followers>13</b> followers</span>
+            <span><b data-following>17</b> following</span>
+            <span>Member since 2021</span>
+          </div>
+          <a class="button ghost" href="https://github.com/stupidprogrammer4" target="_blank" rel="noopener">Open GitHub profile ↗</a>
+        </article>
+        <article class="contribution-card">
+          <div class="project-top"><span>Contribution calendar · last 12 months</span><span>365D</span></div>
+          <img src="static/images/contributions.svg" width="663" height="104" alt="Pouya Sadeghi's GitHub contribution calendar for the last twelve months" loading="lazy">
+        </article>
+      </div>
+
+      <div class="repo-grid">
+        <a class="repo reveal" data-repo="fastamu" href="https://github.com/stupidprogrammer4/fastamu" target="_blank" rel="noopener"><span class="repo-name">fastamu</span><p>Convention-driven modular-monolith framework for Python backends.</p><span class="repo-meta"><span>Python</span><span>★ 1</span></span></a>
+        <a class="repo reveal" data-repo="iranian-marketplaces-sdk" href="https://github.com/stupidprogrammer4/iranian-marketplaces-sdk" target="_blank" rel="noopener"><span class="repo-name">iranian-marketplaces-sdk</span><p>Unified typed SDK for Digikala, Snapp, Basalam and Tapsi.</p><span class="repo-meta"><span>Python</span><span>★ 11</span></span></a>
+        <a class="repo reveal" data-repo="payment-gateways-sdk" href="https://github.com/stupidprogrammer4/payment-gateways-sdk" target="_blank" rel="noopener"><span class="repo-name">payment-gateways-sdk</span><p>Sync and async interface for seven Iranian payment gateways.</p><span class="repo-meta"><span>Python</span><span>★ 1</span></span></a>
+        <a class="repo reveal" data-repo="sms-providers-sdk" href="https://github.com/stupidprogrammer4/sms-providers-sdk" target="_blank" rel="noopener"><span class="repo-name">sms-providers-sdk</span><p>Typed provider-neutral client for major Iranian SMS services.</p><span class="repo-meta"><span>Python</span><span>★ 0</span></span></a>
+        <a class="repo reveal" data-repo="zohal-sdk" href="https://github.com/stupidprogrammer4/zohal-sdk" target="_blank" rel="noopener"><span class="repo-name">zohal-sdk</span><p>Typed SDK covering 37 banking, identity and utility inquiries.</p><span class="repo-meta"><span>Python</span><span>★ 0</span></span></a>
+        <a class="repo reveal" data-repo="math-for-fun" href="https://github.com/stupidprogrammer4/math-for-fun" target="_blank" rel="noopener"><span class="repo-name">math-for-fun</span><p>Mathematical experiments and notebooks.</p><span class="repo-meta"><span>Jupyter Notebook</span><span>★ 0</span></span></a>
+        <a class="repo reveal" data-repo="amupouya" href="https://github.com/stupidprogrammer4/amupouya" target="_blank" rel="noopener"><span class="repo-name">amupouya</span><p>This Matrix-themed personal portfolio.</p><span class="repo-meta"><span>HTML</span><span>★ 0</span></span></a>
+        <a class="repo reveal" data-repo="ds-sharif-spring-1404" href="https://github.com/stupidprogrammer4/ds-sharif-spring-1404" target="_blank" rel="noopener"><span class="repo-name">ds-sharif-spring-1404</span><p>Data-structure projects from SUT, Spring 1404.</p><span class="repo-meta"><span>C++</span><span>★ 0</span></span></a>
+        <a class="repo reveal" data-repo="leetcode" href="https://github.com/stupidprogrammer4/leetcode" target="_blank" rel="noopener"><span class="repo-name">leetcode</span><p>LeetCode problem solutions and algorithm practice.</p><span class="repo-meta"><span>C++</span><span>★ 0</span></span></a>
+        <a class="repo reveal" data-repo="quera" href="https://github.com/stupidprogrammer4/quera" target="_blank" rel="noopener"><span class="repo-name">quera</span><p>Competitive-programming solutions from Quera.</p><span class="repo-meta"><span>C++</span><span>★ 2</span></span></a>
+        <a class="repo reveal" data-repo="recommender-system" href="https://github.com/stupidprogrammer4/recommender-system" target="_blank" rel="noopener"><span class="repo-name">recommender-system</span><p>Recommendation-system exploration in notebooks.</p><span class="repo-meta"><span>Jupyter Notebook</span><span>★ 0</span></span></a>
+        <a class="repo reveal" data-repo="riverraid" href="https://github.com/stupidprogrammer4/riverraid" target="_blank" rel="noopener"><span class="repo-name">riverraid</span><p>Low-level River Raid game experiment.</p><span class="repo-meta"><span>Rust</span><span>★ 0</span></span></a>
+        <a class="repo reveal" data-repo="minesweeper" href="https://github.com/stupidprogrammer4/minesweeper" target="_blank" rel="noopener"><span class="repo-name">minesweeper</span><p>A Minesweeper implementation written in C.</p><span class="repo-meta"><span>C</span><span>★ 2</span></span></a>
+        <a class="repo reveal" data-repo="stupidprogrammer4" href="https://github.com/stupidprogrammer4/stupidprogrammer4" target="_blank" rel="noopener"><span class="repo-name">stupidprogrammer4</span><p>Matrix-themed GitHub profile, identity terminal and contribution automation.</p><span class="repo-meta"><span>Profile</span><span>★ 1</span></span></a>
+      </div>
+    </section>
+
+    <section class="section shell" id="stack">
+      <div class="section-head reveal">
+        <div>
+          <small>Tools selected by constraints</small>
+          <h2>A practical backend toolkit.</h2>
+          <p class="section-copy">I choose technologies for the workload and failure model—not for novelty. The common thread is typed boundaries, observable behavior and maintainable concurrency.</p>
+        </div>
+        <div class="index">04</div>
+      </div>
+      <div class="capabilities">
+        <article class="capability reveal"><div class="code">module_01</div><h3>Backend architecture</h3><p>Modular services, clean dependency boundaries, CQRS read models and domain-led APIs.</p><div class="stack">FastAPI · Litestar · Django · Dishka</div></article>
+        <article class="capability reveal"><div class="code">module_02</div><h3>Concurrency &amp; messaging</h3><p>Worker fleets and asynchronous pipelines with explicit retry, failure and throughput behavior.</p><div class="stack">Taskiq · Celery · RabbitMQ · Redis</div></article>
+        <article class="capability reveal"><div class="code">module_03</div><h3>Data systems</h3><p>Transactional persistence, caching and search projections designed around access patterns.</p><div class="stack">PostgreSQL · Elasticsearch · SQLAlchemy</div></article>
+        <article class="capability reveal"><div class="code">module_04</div><h3>Typed SDK design</h3><p>Predictable clients that normalize third-party APIs without discarding provider-specific detail.</p><div class="stack">Pydantic · dataclasses · httpx · aiohttp</div></article>
+        <article class="capability reveal"><div class="code">module_05</div><h3>Algorithms</h3><p>Data structures, heuristics and correctness reasoning carried from contests into production.</p><div class="stack">C++ · Python · Problem solving</div></article>
+        <article class="capability reveal"><div class="code">module_06</div><h3>Low-level exploration</h3><p>Systems and graphics work that keeps the layers below the framework understandable.</p><div class="stack">C · Rust · SDL2 · Linux</div></article>
+      </div>
+    </section>
+
+    <section class="section shell" id="contact">
+      <div class="contact reveal">
+        <div class="kicker">Start a conversation</div>
+        <h2>Have a backend problem worth solving?</h2>
+        <p>I’m interested in systems where concurrency, correctness and performance are product requirements—not afterthoughts.</p>
+        <div class="contact-links">
+          <a class="button primary" href="mailto:ilovelinux764@gmail.com">Send an email</a>
+          <a class="button ghost" href="https://www.linkedin.com/in/pouya-sadeghi-5a2179250" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a class="button ghost" href="https://github.com/stupidprogrammer4" target="_blank" rel="noopener">GitHub ↗</a>
         </div>
       </div>
+    </section>
+  </main>
 
-      <div class="proj">
-        <div class="proj-title">💰 Digital Gold Trading Platform</div>
-        <ul>
-          <li>Designed a back-to-back automated trading mechanism to execute instant purchases from suppliers upon user trades, entirely eliminating market fluctuation risks.</li>
-          <li>Implemented a robust queue-worker architecture to handle concurrent trading requests reliably and asynchronously.</li>
-          <li>Developed an automated fallback and monitoring system to instantly alert administrators via notifications in case of supplier API failures.</li>
-        </ul>
-        <div class="stack">
-          <span class="spill">Python</span><span class="spill">FastAPI</span>
-          <span class="spill">PostgreSQL</span><span class="spill">RabbitMQ</span><span class="spill">Redis</span>
-        </div>
-      </div>
-
-      <div class="proj">
-        <div class="proj-title">💍 Gold &amp; Jewelry E-commerce</div>
-        <ul>
-          <li>Built an automated, real-time gold pricing system updating store product prices based on live market rates.</li>
-          <li>Designed a smart product categorization engine using heuristic algorithms combined with manual admin overrides.</li>
-          <li>Engineered the data collection and scoring pipeline to serve as the foundation for migrating to a Neural Network (NN) based categorization system in the future.</li>
-        </ul>
-        <div class="stack">
-          <span class="spill">Python</span><span class="spill">FastAPI</span>
-          <span class="spill">PostgreSQL</span><span class="spill">Redis</span><span class="spill">Celery</span>
-        </div>
-      </div>
+  <footer>
+    <div class="shell footer">
+      <span>© <span id="year">2026</span> Pouya Sadeghi</span>
+      <span class="online">● SYSTEM ONLINE · TEHRAN</span>
     </div>
-  </section>
+  </footer>
 
-  <!-- COMPETITIVE PROGRAMMING -->
-  <section class="rv" id="cp">
-    <div class="sec-head">
-      <span class="sec-ico">⚔️</span>
-      <span class="sec-title">Competitive Programming</span>
-      <div class="sec-line"></div>
-    </div>
-    <div class="cp-grid">
-      <div class="cp-card">
-        <div class="cp-icon">🥇</div>
-        <div class="cp-info">
-          <div class="cp-title">Hamkad 5</div>
-          <div class="cp-sub">Software Engineering Track &mdash; Quera</div>
-          <div class="cp-score">Participated &amp; Competed</div>
-        </div>
-      </div>
-      <div class="cp-card">
-        <div class="cp-icon">🎯</div>
-        <div class="cp-info">
-          <div class="cp-title">Technology Olympics 2024</div>
-          <div class="cp-sub">Algorithm Track</div>
-          <div class="cp-score">Score: <span class="score-num">4.5</span></div>
-        </div>
-      </div>
-      <div class="cp-card">
-        <div class="cp-icon">⚡</div>
-        <div class="cp-info">
-          <div class="cp-title">Algorithm Technology</div>
-          <div class="cp-sub">Quera Competitive Arena</div>
-          <div class="cp-score">Score: <span class="score-num">8.9</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="cp-note">
-      Years of competitive programming have shaped a deep intuition for optimal
-      algorithm design and data structures — a mindset that directly translates
-      into how production systems get architected and tuned for performance.
-    </div>
-  </section>
-
-  <!-- COURSES -->
-  <section class="rv" id="courses">
-    <div class="sec-head">
-      <span class="sec-ico">📜</span>
-      <span class="sec-title">Courses &amp; Certifications</span>
-      <div class="sec-line"></div>
-    </div>
-    <div class="course-list">
-      <div class="course-card">
-        <div class="course-left">
-          <div class="course-title">Advanced Algorithms &amp; Data Structures</div>
-          <div class="course-provider">Quera — Academic Track</div>
-        </div>
-        <div class="course-grade perfect">Perfect Score ✓</div>
-      </div>
-      <div class="course-card">
-        <div class="course-left">
-          <div class="course-title">Advanced Python Programming</div>
-          <div class="course-provider">Quera — Academic Track</div>
-        </div>
-        <div class="course-grade perfect">Perfect Score ✓</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SOFT SKILLS -->
-  <section class="rv" id="softskills">
-    <div class="sec-head">
-      <span class="sec-ico">🧠</span>
-      <span class="sec-title">Soft Skills</span>
-      <div class="sec-line"></div>
-    </div>
-    <div class="tags">
-      <span class="tag soft">Problem-Solving</span>
-      <span class="tag soft">Perseverance</span>
-      <span class="tag soft">Teamwork</span>
-      <span class="tag soft">Teaching Ability</span>
-      <span class="tag soft">Active Listening</span>
-      <span class="tag soft">Emotional Intelligence</span>
-      <span class="tag soft">Self-Awareness</span>
-      <span class="tag soft">Confidence</span>
-    </div>
-  </section>
-
-  <section class="rv" id="education">
-    <div class="sec-head">
-      <span class="sec-ico">🎓</span>
-      <span class="sec-title">Education</span>
-      <div class="sec-line"></div>
-    </div>
-    <div class="card">
-      <div class="card-row">
-        <span class="card-title">Bachelor of Science in Computer Science</span>
-        <span class="badge">2023 – 2027</span>
-      </div>
-      <div class="card-sub">The Islamic Azad University, Central Tehran</div>
-    </div>
-  </section>
-
-  <section class="rv">
-    <div class="sec-head">
-      <span class="sec-ico">🌐</span>
-      <span class="sec-title">Languages</span>
-      <div class="sec-line"></div>
-    </div>
-    <div class="grid2">
-      <div class="mini-card">
-        <div class="mini-title">Persian</div>
-        <div class="mini-sub">Native</div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-title">English</div>
-        <div class="mini-sub">Professional Working Proficiency</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="rv" id="interests">
-    <div class="sec-head">
-      <span class="sec-ico">✨</span>
-      <span class="sec-title">Interests</span>
-      <div class="sec-line"></div>
-    </div>
-    <div class="int-grid">
-      <div class="int-card"><span class="int-icon">🦋</span><div class="int-label">Butterflies</div></div>
-      <div class="int-card"><span class="int-icon">👑</span><div class="int-label">Crown</div></div>
-      <div class="int-card"><span class="int-icon">🥊</span><div class="int-label">Boxing</div></div>
-    </div>
-  </section>
-
-</div>
-
-<footer>
-  <span class="fbfly">🦋</span>
-  Pouya Sadeghi &copy; 2025 &mdash; Backend Developer
-</footer>
-
-<script>
-// ── Cursor glow ──────────────────────────────────────────────────────────────
-const glow = document.getElementById('glow');
-document.addEventListener('mousemove', e => {
-  glow.style.left = e.clientX + 'px';
-  glow.style.top  = e.clientY + 'px';
-});
-
-// ── Particle canvas ───────────────────────────────────────────────────────────
-const pcv = document.getElementById('bgCanvas');
-const pcx = pcv.getContext('2d');
-
-function resizeAll() {
-  pcv.width  = bfcv.width  = innerWidth;
-  pcv.height = bfcv.height = innerHeight;
-}
-
-const PTS = Array.from({length: 90}, () => ({
-  x: Math.random() * innerWidth,
-  y: Math.random() * innerHeight,
-  r: Math.random() * 1.4 + .3,
-  vy: -(Math.random() * .25 + .05),
-  vx: (Math.random() - .5) * .18,
-  o: Math.random() * .45 + .1,
-}));
-
-(function drawPts() {
-  pcx.clearRect(0, 0, pcv.width, pcv.height);
-  PTS.forEach(p => {
-    pcx.beginPath();
-    pcx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    pcx.fillStyle = `rgba(96,165,250,${p.o})`;
-    pcx.fill();
-    p.y += p.vy; p.x += p.vx;
-    if (p.y < -4) { p.y = pcv.height + 4; p.x = Math.random() * pcv.width; }
-    if (p.x < 0 || p.x > pcv.width) p.vx *= -1;
-  });
-  requestAnimationFrame(drawPts);
-})();
-
-// ── Butterfly canvas ──────────────────────────────────────────────────────────
-const bfcv = document.getElementById('bfCanvas');
-const bfx  = bfcv.getContext('2d');
-resizeAll();
-window.addEventListener('resize', resizeAll);
-
-const MAX_BF      = 12;   // hard ceiling on live butterflies
-const SPAWN_EVERY = 3;    // seconds between spawns
-
-class Butterfly {
-  constructor(ctx, H) {
-    this.x     = -120;
-    this.baseY = H * (0.08 + Math.random() * 0.80);
-    this.y     = this.baseY;
-    this.s     = 28 + Math.random() * 38;        // wing span 28–66 px
-    this.vx    = 55  + Math.random() * 75;       // horizontal speed px/s
-    this.flapA = Math.random() * Math.PI * 2;
-    this.flapV = 7   + Math.random() * 7;        // flap speed rad/s
-    this.waveA = Math.random() * Math.PI * 2;
-    this.waveV = 1.2 + Math.random() * 1.2;
-    this.waveAmp = 18 + Math.random() * 28;
-    this.hue   = 200 + Math.random() * 55;       // deep-blue range
-    this.alpha = 0;
-    this.pitch = 0;
-    this._buildArt(ctx);
-  }
-
-  // Wing path, veins and gradients depend only on s/hue, so build them once
-  // per butterfly instead of re-allocating them on every frame.
-  _buildArt(ctx) {
-    const s = this.s, h = this.hue;
-
-    // Wing-local space: +x runs outward along the span, +y points forward
-    // (leading edge). Fore- and hind-wing are separate so the hind one can lag.
-    const fw = new Path2D();
-    fw.moveTo(0, s * .10);
-    fw.bezierCurveTo(s*.30,  s*.28,  s*.62,  s*.30,  s*.84,  s*.14);  // leading edge → apex
-    fw.bezierCurveTo(s*.80,  s*.02,  s*.66, -s*.06,  s*.50, -s*.10);  // outer margin
-    fw.bezierCurveTo(s*.34, -s*.14,  s*.12, -s*.10,  0,      s*.10);  // trailing edge → root
-    this.fore = fw;
-
-    const hw = new Path2D();
-    hw.moveTo(0, s * .06);
-    hw.bezierCurveTo(s*.22,  s*.02,  s*.44, -s*.06,  s*.46, -s*.22);  // outer edge, rearward
-    hw.bezierCurveTo(s*.47, -s*.34,  s*.30, -s*.36,  s*.16, -s*.30);  // tail lobe
-    hw.bezierCurveTo(s*.05, -s*.24,  0,     -s*.10,  0,      s*.06);  // back to root
-    this.hind = hw;
-
-    const v = new Path2D();
-    v.moveTo(s*.04, s*.06); v.quadraticCurveTo(s*.40,  s*.20, s*.78,  s*.14);
-    v.moveTo(s*.04, s*.04); v.quadraticCurveTo(s*.38,  s*.06, s*.66, -s*.04);
-    v.moveTo(s*.04, s*.02); v.quadraticCurveTo(s*.30, -s*.04, s*.48, -s*.09);
-    this.veins = v;
-
-    // dark at the base and along the outer margin, bright through the middle
-    this.gNear = ctx.createLinearGradient(0, 0, s * .84, 0);
-    this.gNear.addColorStop(0.00, `hsla(${h + 26}, 60%, 30%, 0.90)`);
-    this.gNear.addColorStop(0.35, `hsla(${h + 8},  92%, 72%, 0.94)`);
-    this.gNear.addColorStop(0.70, `hsla(${h},      90%, 58%, 0.92)`);
-    this.gNear.addColorStop(1.00, `hsla(${h + 30}, 68%, 30%, 0.74)`);
-
-    this.gFar = ctx.createLinearGradient(0, 0, s * .84, 0);
-    this.gFar.addColorStop(0.00, `hsla(${h + 28}, 52%, 20%, 0.78)`);
-    this.gFar.addColorStop(0.40, `hsla(${h + 12}, 64%, 46%, 0.80)`);
-    this.gFar.addColorStop(1.00, `hsla(${h + 32}, 52%, 18%, 0.62)`);
-
-    this.gBody = ctx.createLinearGradient(0, -s * .09, 0, s * .09);
-    this.gBody.addColorStop(0.00, `hsla(${h + 10}, 55%, 66%, 1)`);
-    this.gBody.addColorStop(0.45, `hsla(${h + 20}, 60%, 44%, 1)`);
-    this.gBody.addColorStop(1.00, `hsla(${h + 34}, 55%, 18%, 1)`);
-  }
-
-  update(dt) {
-    const W = bfcv.width;
-    this.flapA += this.flapV * dt;
-    this.waveA += this.waveV * dt;
-    this.x     += this.vx   * dt;
-    this.y      = this.baseY + Math.sin(this.waveA) * this.waveAmp;
-
-    // nose follows the flight path
-    const vy   = Math.cos(this.waveA) * this.waveAmp * this.waveV;
-    this.pitch = Math.atan2(vy, this.vx) * 0.6;
-
-    const fade = 110;
-    if      (this.x < fade)     this.alpha = (this.x / fade) * 0.90;
-    else if (this.x > W - fade) this.alpha = ((W - this.x) / fade) * 0.90;
-    else                        this.alpha = 0.90;
-    this.alpha = Math.max(0, this.alpha);
-  }
-
-  draw(ctx) {
-    if (this.alpha <= 0) return;
-
-    // Wing elevation: +1.35 rad = raised over the back, -0.30 = downstroke.
-    // The exponent makes the stroke dwell raised, where the shape reads best,
-    // and snap through the flat mid-stroke.
-    const f  = Math.pow(0.5 - 0.5 * Math.cos(this.flapA), 1.75);
-    const th = 1.35 - 1.65 * f;
-
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.pitch);
-    ctx.globalAlpha = this.alpha;
-
-    this._wing(ctx, th, false);  // far flank, behind the body
-    this._body(ctx);
-    this._wing(ctx, th, true);   // near flank, in front
-    this._antennae(ctx);
-    ctx.restore();
-  }
-
-  // Profile view: each flank's wing pair hinges on the body axis, so on screen
-  // the tips travel up and down and flatten to a sliver at mid-stroke. KX/KY
-  // put the camera slightly above and to the side so the flanks stay readable.
-  _wing(ctx, th, near) {
-    const s = this.s, h = this.hue;
-    const KX = 0.34, KY = 0.22;
-    const dir  = near ? 1 : -1;
-    const k    = near ? 1 : 0.94;
-    const fill = near ? this.gNear : this.gFar;
-    const edge = `hsla(${h + 26}, 50%, ${near ? 26 : 18}%, 0.30)`;
-
-    // span → mostly vertical (up when th > 0), chord → along the body
-    const part = (t, path, decorate) => {
-      const c = Math.cos(t), sn = Math.sin(t);
-      ctx.save();
-      ctx.translate(s * .06, -s * .055);
-      ctx.transform(-dir * KX * c * k, (-sn + dir * KY * c) * k, 1, 0, 0, 0);
-      ctx.fillStyle = fill;
-      ctx.fill(path);
-      if (decorate) decorate();
-      ctx.strokeStyle = edge;
-      ctx.lineWidth = 0.6;
-      ctx.stroke(path);
-      ctx.restore();
-    };
-
-    // the hind wing lags the fore wing, as it does on a real butterfly
-    part(th - 0.22, this.hind);
-    part(th, this.fore, near ? () => {
-      ctx.strokeStyle = `hsla(${h + 18}, 60%, 92%, 0.22)`;
-      ctx.lineWidth = 0.7;
-      ctx.stroke(this.veins);
-
-      // iridescent spot
-      ctx.beginPath();
-      ctx.ellipse(s * .58, s * .10, s * .085, s * .055, -0.3, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${h + 42}, 88%, 90%, 0.20)`;
-      ctx.fill();
-    } : null);
-  }
-
-  // Body lies along the flight direction: head to the right, abdomen trailing
-  // out behind the hind wing so the silhouette still reads as an insect.
-  _body(ctx) {
-    const s = this.s, h = this.hue;
-
-    // abdomen — tapered and segmented
-    ctx.beginPath();
-    ctx.moveTo(s*.06, -s*.075);
-    ctx.bezierCurveTo(-s*.12, -s*.062, -s*.34, -s*.042, -s*.50, -s*.014);
-    ctx.bezierCurveTo(-s*.54,  s*.002, -s*.53,  s*.024, -s*.47,  s*.032);
-    ctx.bezierCurveTo(-s*.31,  s*.052, -s*.10,  s*.074,  s*.06,  s*.086);
-    ctx.closePath();
-    ctx.fillStyle = this.gBody;
-    ctx.fill();
-
-    ctx.strokeStyle = `hsla(${h + 26}, 45%, 22%, 0.35)`;
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i < 5; i++) {
-      const t  = i / 5;
-      const bx = -s * (0.05 + t * 0.42);
-      const by =  s * (0.070 - t * 0.042);
-      ctx.beginPath();
-      ctx.moveTo(bx, -by * 0.85);
-      ctx.lineTo(bx,  by);
-      ctx.stroke();
-    }
-
-    // thorax — the bulky part the wings hinge on
-    ctx.beginPath();
-    ctx.ellipse(s * .07, -s * .012, s * .135, s * .098, -0.10, 0, Math.PI * 2);
-    ctx.fillStyle = this.gBody;
-    ctx.fill();
-    ctx.strokeStyle = `hsla(${h}, 40%, 34%, 0.40)`;
-    ctx.stroke();
-
-    // head + eye
-    ctx.beginPath();
-    ctx.arc(s * .20, -s * .050, s * .058, 0, Math.PI * 2);
-    ctx.fillStyle = `hsla(${h + 14}, 50%, 56%, 0.98)`;
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(s * .225, -s * .062, s * .030, 0, Math.PI * 2);
-    ctx.fillStyle = `hsla(${h + 34}, 40%, 14%, 0.80)`;
-    ctx.fill();
-
-    // proboscis, curled under the head
-    ctx.strokeStyle = `hsla(${h + 20}, 45%, 40%, 0.55)`;
-    ctx.lineWidth = 0.5;
-    ctx.beginPath();
-    ctx.moveTo(s * .23, -s * .020);
-    ctx.quadraticCurveTo(s * .27, s * .050, s * .19, s * .048);
-    ctx.stroke();
-  }
-
-  // Both antennae sweep forward; the far one is dimmer and slightly offset
-  _antennae(ctx) {
-    const s = this.s, h = this.hue;
-    ctx.lineWidth = Math.max(0.6, s * 0.012);
-    for (const [i, op] of [[0, 0.80], [1, 0.38]]) {
-      const d = i * s * 0.05;
-      ctx.strokeStyle = `hsla(${h}, 60%, 78%, ${op})`;
-      ctx.beginPath();
-      ctx.moveTo(s * .22 - d, -s * .085);
-      ctx.quadraticCurveTo(s * .36 - d, -s * .16, s * .37 - d, -s * .29);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(s * .37 - d, -s * .29, s * .026, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${h}, 85%, 86%, ${op + 0.10})`;
-      ctx.fill();
-    }
-  }
-
-  done() { return this.x > bfcv.width + 140; }
-}
-
-// ── Animation loop ────────────────────────────────────────────────────────────
-const bflies = [];
-let lastT = 0;
-let spawnAcc = SPAWN_EVERY;          // first butterfly appears on frame one
-
-function spawnBf() {
-  if (bflies.length >= MAX_BF) return;
-  bflies.push(new Butterfly(bfx, bfcv.height));
-}
-
-(function loop(ts) {
-  const dt = Math.min((ts - lastT) / 1000, 0.05);
-  lastT = ts;
-
-  // Spawning is driven by the frame clock rather than setInterval: rAF stops
-  // while the tab is hidden, so butterflies can no longer pile up unrendered.
-  spawnAcc += dt;
-  if (spawnAcc >= SPAWN_EVERY) { spawnAcc = 0; spawnBf(); }
-
-  bfx.clearRect(0, 0, bfcv.width, bfcv.height);
-
-  for (let i = bflies.length - 1; i >= 0; i--) {
-    bflies[i].update(dt);
-    bflies[i].draw(bfx);
-    if (bflies[i].done()) bflies.splice(i, 1);
-  }
-
-  requestAnimationFrame(loop);
-})(0);
-
-// ── Scroll reveal ─────────────────────────────────────────────────────────────
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
-  });
-}, { threshold: .1 });
-document.querySelectorAll('.rv').forEach(el => obs.observe(el));
-</script>
+  <script src="scripts/main.js" defer></script>
 </body>
 </html>
