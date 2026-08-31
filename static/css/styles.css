@@ -88,6 +88,9 @@ h2{margin:.5rem 0 0;font-size:clamp(2.3rem,5vw,4.6rem);line-height:1;letter-spac
 .profile-meta{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:1rem 0;color:var(--muted);font-size:.72rem}
 .contribution-card{overflow:hidden}
 .contribution-card img{display:block;width:100%;min-height:130px;object-fit:contain}
+.activity-card,.snake-card{margin-bottom:1rem;padding:1.4rem;border:1px solid var(--line);background:var(--panel);overflow:hidden}
+.activity-card img,.snake-card img{display:block;width:100%;height:auto;margin-top:1rem;object-fit:contain}
+.snake-card img{min-height:150px}
 .repo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
 .repo{display:flex;flex-direction:column;min-height:160px;padding:1rem;border:1px solid var(--line);background:rgba(3,15,8,.78);text-decoration:none;transition:.2s}
 .repo:hover{border-color:var(--hot);transform:translateY(-2px)}
