@@ -1,122 +1,68 @@
-const canvas = document.querySelector("#rain");
-const context = canvas.getContext("2d");
-const matrixCharacters = "01アイウエオカキクケコサシスセソ{}[]<>/\\PYTHONFASTAPIREDIS";
-const fontSize = 15;
-let drops = [];
+const root = document.documentElement;
+const themeButton = document.querySelector('.theme-toggle');
+const themeColor = document.querySelector('meta[name="theme-color"]');
 
-function resizeMatrixRain() {
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.width = window.innerWidth * pixelRatio;
-  canvas.height = window.innerHeight * pixelRatio;
-  canvas.style.width = `${window.innerWidth}px`;
-  canvas.style.height = `${window.innerHeight}px`;
-  context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-  drops = Array.from(
-    { length: Math.ceil(window.innerWidth / fontSize) },
-    () => Math.random() * -80,
-  );
+function updateThemeControls() {
+  const light = root.dataset.theme === 'light';
+  themeButton.setAttribute('aria-label', `Switch to ${light ? 'dark' : 'light'} theme`);
+  themeButton.setAttribute('aria-pressed', String(light));
+  themeColor.setAttribute('content', light ? '#f6f4fb' : '#101018');
 }
 
-function drawMatrixRain() {
-  context.fillStyle = "rgba(2, 8, 5, .075)";
-  context.fillRect(0, 0, window.innerWidth, window.innerHeight);
-  context.font = `${fontSize}px monospace`;
+themeButton.hidden = false;
+updateThemeControls();
+themeButton.addEventListener('click', () => {
+  root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  try { localStorage.setItem('pouya-theme', root.dataset.theme); } catch (_) {}
+  updateThemeControls();
+});
 
-  drops.forEach((drop, index) => {
-    const character = matrixCharacters[Math.floor(Math.random() * matrixCharacters.length)];
-    context.fillStyle = Math.random() > 0.97 ? "#caffda" : "#19c95a";
-    context.fillText(character, index * fontSize, drop * fontSize);
+const menuButton = document.querySelector('.menu-toggle');
+const navigation = document.querySelector('.nav-links');
+root.classList.add('js');
+menuButton.hidden = false;
 
-    if (drop * fontSize > window.innerHeight && Math.random() > 0.975) {
-      drops[index] = 0;
-    } else {
-      drops[index]++;
+function closeMenu(returnFocus = false) {
+  navigation.classList.remove('open');
+  menuButton.setAttribute('aria-expanded', 'false');
+  menuButton.setAttribute('aria-label', 'Open navigation');
+  if (returnFocus) menuButton.focus();
+}
+
+menuButton.addEventListener('click', () => {
+  const open = navigation.classList.toggle('open');
+  menuButton.setAttribute('aria-expanded', String(open));
+  menuButton.setAttribute('aria-label', `${open ? 'Close' : 'Open'} navigation`);
+});
+navigation.addEventListener('click', event => {
+  if (event.target.closest('a')) closeMenu();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && navigation.classList.contains('open')) closeMenu(true);
+});
+document.addEventListener('click', event => {
+  if (!event.target.closest('.nav')) closeMenu();
+});
+document.addEventListener('focusin', event => {
+  if (!event.target.closest('.nav')) closeMenu();
+});
+window.matchMedia('(min-width: 761px)').addEventListener('change', () => closeMenu());
+
+const copyButton = document.querySelector('.copy-email');
+const copyStatus = document.querySelector('.copy-status');
+let feedbackTimeout;
+if (window.isSecureContext && navigator.clipboard?.writeText) {
+  copyButton.hidden = false;
+  copyButton.addEventListener('click', async () => {
+    clearTimeout(feedbackTimeout);
+    try {
+      await navigator.clipboard.writeText('ilovelinux764@gmail.com');
+      copyStatus.textContent = 'Email copied.';
+    } catch (_) {
+      copyStatus.textContent = 'Select the email address below to copy it.';
     }
+    feedbackTimeout = setTimeout(() => { copyStatus.textContent = ''; }, 5000);
   });
 }
 
-resizeMatrixRain();
-if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  drawMatrixRain();
-} else {
-  window.setInterval(drawMatrixRain, 48);
-}
-window.addEventListener("resize", resizeMatrixRain, { passive: true });
-
-const menuButton = document.querySelector(".menu");
-const navigationLinks = document.querySelector(".links");
-
-menuButton.addEventListener("click", () => {
-  const isOpen = navigationLinks.classList.toggle("open");
-  menuButton.setAttribute("aria-expanded", String(isOpen));
-  menuButton.textContent = isOpen ? "×" : "☰";
-});
-
-navigationLinks.addEventListener("click", (event) => {
-  if (!event.target.closest("a")) return;
-  navigationLinks.classList.remove("open");
-  menuButton.textContent = "☰";
-  menuButton.setAttribute("aria-expanded", "false");
-});
-
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add("visible");
-      revealObserver.unobserve(entry.target);
-    });
-  },
-  { threshold: 0.1 },
-);
-
-document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
-
-async function hydrateGitHubData() {
-  const [userResponse, repositoriesResponse] = await Promise.all([
-    fetch("https://api.github.com/users/stupidprogrammer4"),
-    fetch("https://api.github.com/users/stupidprogrammer4/repos?per_page=100&sort=updated"),
-  ]);
-
-  if (!userResponse.ok || !repositoriesResponse.ok) {
-    throw new Error("GitHub API request failed");
-  }
-
-  const [user, repositories] = await Promise.all([
-    userResponse.json(),
-    repositoriesResponse.json(),
-  ]);
-
-  document.querySelectorAll("[data-repos]").forEach((element) => {
-    element.textContent = user.public_repos;
-  });
-  document.querySelectorAll("[data-followers]").forEach((element) => {
-    element.textContent = user.followers;
-  });
-  document.querySelectorAll("[data-following]").forEach((element) => {
-    element.textContent = user.following;
-  });
-
-  const repositoriesByName = Object.fromEntries(
-    repositories.map((repository) => [repository.name, repository]),
-  );
-
-  const marketplaceSdk = repositoriesByName["iranian-marketplaces-sdk"];
-  if (marketplaceSdk) {
-    document.querySelector("[data-stars]").textContent = marketplaceSdk.stargazers_count;
-  }
-
-  document.querySelectorAll("[data-repo]").forEach((card) => {
-    const repository = repositoriesByName[card.dataset.repo];
-    if (!repository) return;
-    const metadata = card.querySelector(".repo-meta");
-    metadata.lastElementChild.textContent = `★ ${repository.stargazers_count}`;
-    if (repository.language) metadata.firstElementChild.textContent = repository.language;
-  });
-}
-
-hydrateGitHubData().catch(() => {
-  // Server-rendered values remain available when GitHub is unreachable.
-});
-
-document.querySelector("#year").textContent = new Date().getFullYear();
+document.querySelector('#year').textContent = new Date().getFullYear();

@@ -1,321 +1,168 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#020805">
-  <meta name="description" content="Pouya Sadeghi — Backend and systems engineer building reliable distributed services, commerce infrastructure and open-source Python tooling.">
-  <meta property="og:title" content="Pouya Sadeghi — Backend & Systems Engineer">
-  <meta property="og:description" content="Production backend systems and open-source Python infrastructure, built for correctness under load.">
+  <meta name="theme-color" content="#101018">
+  <meta name="description" content="Hi, I'm Pouya Sadeghi — a backend developer in Tehran. I build commerce systems, create Python tools, and explore the ideas behind them.">
+  <meta property="og:title" content="Pouya Sadeghi — Developer, builder, curious human">
+  <meta property="og:description" content="Backend systems, thoughtful tools, and a little life beyond the keyboard. The personal website of Pouya Sadeghi.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://amupouya.org/">
+  <meta property="og:image" content="https://amupouya.org/static/images/butterfly-editorial.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://amupouya.org/">
   <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="static/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="static/css/styles.css">
-  <title>Pouya Sadeghi — Backend & Systems Engineer</title>
+  <title>Pouya Sadeghi — Developer, builder, curious human</title>
+  <script>
+    try {
+      const preference = localStorage.getItem('pouya-theme');
+      if (preference === 'light' || preference === 'dark') document.documentElement.dataset.theme = preference;
+    } catch (_) {}
+  </script>
 </head>
 <body>
-  <canvas id="rain" aria-hidden="true"></canvas>
-
+  <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <nav class="nav shell" aria-label="Main navigation">
-      <a class="brand" href="#top" aria-label="Pouya Sadeghi, home">
-        <span class="mark">PS</span>
-        <span>pouya<span class="cursor">_</span></span>
-      </a>
-      <button class="menu" type="button" aria-expanded="false" aria-controls="links" aria-label="Toggle navigation">☰</button>
-      <ul class="links" id="links">
-        <li><a href="#experience">Goldis</a></li>
-        <li><a href="#projects">Open source</a></li>
-        <li><a href="#github">GitHub</a></li>
-        <li><a href="#stack">Expertise</a></li>
-        <li><a class="connect" href="#contact">Connect</a></li>
+      <a class="brand" href="#top" aria-label="Pouya Sadeghi, home">pouya<span>.</span></a>
+      <ul class="nav-links" id="navigation">
+        <li><a href="#work">Selected work</a></li>
+        <li><a href="#about">About me</a></li>
+        <li><a href="#lab">The workshop</a></li>
+        <li><a href="#contact">Say hello <span aria-hidden="true">↗</span></a></li>
       </ul>
+      <div class="nav-controls">
+        <button class="theme-toggle icon-button" type="button" aria-label="Switch to light theme" aria-pressed="false" hidden>
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.5 13A8.5 8.5 0 0 1 11 3.5 8.5 8.5 0 1 0 20.5 13Z"/></svg>
+        </button>
+        <button class="menu-toggle icon-button" type="button" aria-expanded="false" aria-controls="navigation" aria-label="Open navigation" hidden><span></span><span></span></button>
+      </div>
     </nav>
   </header>
 
-  <main>
-    <section class="hero" id="top">
-      <div class="shell hero-grid">
-        <div>
-          <div class="kicker">Backend developer · Tehran, Iran</div>
-          <h1>Pouya<br><span class="outline">Sadeghi</span></h1>
-          <p class="lead">
-            I design backend systems that stay correct under concurrency—from marketplace
-            synchronization and real-time gold trading to reusable, typed Python infrastructure.
-          </p>
-          <div class="actions">
-            <a class="button primary" href="#experience">View production work</a>
-            <a class="button ghost" href="https://www.linkedin.com/in/pouya-sadeghi-5a2179250" target="_blank" rel="noopener">LinkedIn ↗</a>
-          </div>
+  <main id="main">
+    <section class="hero shell" id="top" aria-labelledby="hero-heading">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="small-dot" aria-hidden="true"></span> Backend developer &amp; curious human</p>
+        <h1 id="hero-heading">Hi, I’m Pouya.<br>I build things<br>that <span class="gradient-text">work.</span></h1>
+        <p class="hero-intro">Thoughtful backends. Useful tools. A healthy obsession with how things fit together.</p>
+        <p class="hero-description">I’m Pouya Sadeghi, a developer at Goldis, based in Tehran. I turn complicated commerce problems into systems people can rely on.</p>
+        <div class="actions">
+          <a class="button primary" href="#work">Explore my work <span aria-hidden="true">↗</span></a>
+          <a class="text-link" href="#about">A little about me <span aria-hidden="true">↓</span></a>
         </div>
+        <div class="hero-footnote"><span>Tehran, Iran</span><span class="footnote-line" aria-hidden="true"></span><span>Python · Systems · Open source</span></div>
+      </div>
+      <figure class="hero-art">
+        <div class="art-frame">
+          <img src="static/images/butterfly-editorial.webp" width="1122" height="1402" alt="A delicate sapphire-blue and violet butterfly resting on a branch against a softly lit indigo background" fetchpriority="high">
+          <div class="art-topline" aria-hidden="true"><span>A DIFFERENT PERSPECTIVE</span><span>01 / POUYA</span></div>
+          <div class="art-bottomline"><span>Small details.<br>Endless possibilities.</span><span class="art-spark" aria-hidden="true">✳</span></div>
+        </div>
+        <figcaption>A little blue butterfly. A reminder to stay curious.</figcaption>
+      </figure>
+    </section>
 
-        <aside class="terminal" aria-label="Developer profile">
-          <div class="term-bar">
-            <span>pouya@arch: ~/profile</span>
-            <span class="dots">● ● ●</span>
-          </div>
-          <div class="term-body">
-            <p><span class="prompt">$</span> whoami</p>
-            <p>role = <span class="value">"Backend Developer"</span></p>
-            <p>company = <span class="value">"Goldis"</span></p>
-            <p>focus = [</p>
-            <p>&nbsp; <span class="value">"distributed systems"</span>,</p>
-            <p>&nbsp; <span class="value">"low-latency design"</span>,</p>
-            <p>&nbsp; <span class="value">"developer tooling"</span></p>
-            <p>]</p>
-            <p class="comment"># Build the tool the problem actually needs.</p>
-            <span class="status"><i></i> open_to_collaboration</span>
-          </div>
-        </aside>
+    <section class="about section shell" id="about" aria-labelledby="about-heading">
+      <div class="section-label"><span>01 / A little context</span><span class="line" aria-hidden="true"></span></div>
+      <div class="about-layout">
+        <div class="about-heading"><h2 id="about-heading">An engineer.<br>A problem solver.<br><span class="muted-heading">Still a student.</span></h2><a class="text-link" href="#life">And away from the keyboard <span aria-hidden="true">↘</span></a></div>
+        <div class="about-copy">
+          <p class="large-copy">I like understanding a problem all the way down — then building the smallest, clearest tool that can solve it well.</p>
+          <p>At Goldis, that means connecting marketplaces, coordinating background work, and making financial workflows behave under concurrency. In my own projects, it means turning the parts I keep rebuilding into reusable Python tools.</p>
+          <p>I’m also studying Computer Science. Algorithms, data structures, and the occasional detour into C or Rust keep me asking better questions about the layers underneath an API.</p>
+          <dl class="personal-details">
+            <div><dt>Currently</dt><dd>Backend developer at Goldis</dd></div>
+            <div><dt>Studying</dt><dd>B.Sc. Computer Science · 2023–2027</dd></div>
+            <div><dt>At home with</dt><dd>Python, Linux, and a good problem</dd></div>
+          </dl>
+        </div>
       </div>
     </section>
 
-    <div class="ticker" aria-hidden="true">
-      <div class="track">
-        <span>Python 3.13</span><span>FastAPI</span><span>PostgreSQL</span><span>Redis</span>
-        <span>Taskiq</span><span>RabbitMQ</span><span>Elasticsearch</span><span>Concurrency</span>
-        <span>Python 3.13</span><span>FastAPI</span><span>PostgreSQL</span><span>Redis</span>
-        <span>Taskiq</span><span>RabbitMQ</span><span>Elasticsearch</span><span>Concurrency</span>
-      </div>
-    </div>
+    <section class="section shell" id="work" aria-labelledby="work-heading">
+      <div class="section-label"><span>02 / Selected work</span><span class="line" aria-hidden="true"></span></div>
+      <div class="section-heading"><h2 id="work-heading">Real problems.<br><span class="muted-heading">Considered solutions.</span></h2><p>A few systems I’ve worked on at Goldis.<br>The interesting part is what happens behind the interface.</p></div>
 
-    <section class="section shell reveal" aria-label="GitHub overview">
-      <div class="stats">
-        <div class="stat"><span class="number" data-repos>23</span><span class="label">Public repositories</span></div>
-        <div class="stat"><span class="number" data-followers>13</span><span class="label">GitHub followers</span></div>
-        <div class="stat"><span class="number" data-following>17</span><span class="label">Following</span></div>
-        <div class="stat"><span class="number">2021</span><span class="label">Building in public since</span></div>
-      </div>
-    </section>
-
-    <section class="section shell" id="identity">
-      <div class="section-head reveal">
-        <div>
-          <small>Profile, rendered as code</small>
-          <h2>The engineer behind the systems.</h2>
-          <p class="section-copy">A terminal-style snapshot of how I work: performance-aware, detail-oriented and comfortable moving between architecture and implementation.</p>
+      <article class="work-feature">
+        <div class="work-visual sync-visual" role="img" aria-label="Goldis connects inventory and orders with Digikala, Snapp, Basalam, and Tapsi marketplaces">
+          <div class="visual-heading"><span>CONNECTED COMMERCE</span><span aria-hidden="true">↗</span></div>
+          <div class="sync-orbit" aria-hidden="true"><div class="orbit-ring orbit-one"></div><div class="orbit-ring orbit-two"></div><span class="market market-one">Digikala</span><span class="market market-two">Snapp</span><span class="market market-three">Basalam</span><span class="market market-four">Tapsi</span><div class="sync-hub"><span class="hub-symbol">↔</span><span>Goldis</span></div></div>
+          <div class="visual-caption"><span>Inventory. Orders. Pricing.</span><span class="tiny-dot" aria-hidden="true"></span></div>
         </div>
-        <div class="index">00</div>
-      </div>
-      <div class="identity-panel reveal">
-        <img src="static/images/identity.svg" width="1000" height="992" alt="Matrix terminal showing Pouya Sadeghi's profile with an ASCII butterfly" loading="lazy">
-        <div class="identity-note"><span>source: github/profile/identity.svg</span><span>signal: verified</span></div>
-      </div>
-    </section>
-
-    <section class="section shell" id="experience">
-      <div class="section-head reveal">
-        <div>
-          <small>Selected production work · Goldis</small>
-          <h2>Backend systems for live commerce.</h2>
-          <p class="section-copy">Three production platforms covering marketplace operations, automated trading and dynamic pricing—designed around concurrency, failure recovery and financial correctness.</p>
+        <div class="work-copy">
+          <p class="eyebrow">Commerce infrastructure · Goldis</p>
+          <h3>Many marketplaces.<br>One coherent system.</h3>
+          <p>A synchronization and pricing engine that connects products, inventory, orders, discounts, and invoices across four marketplaces.</p>
+          <p>The work spans concurrent workers, competitor-aware pricing, product mapping, and financial reporting — with explicit limits and recovery paths when an external service misbehaves.</p>
+          <ul class="tags" aria-label="Technologies"><li>Python</li><li>Litestar</li><li>Taskiq</li><li>PostgreSQL</li><li>Redis</li></ul>
+          <details class="work-details"><summary>A closer look <span aria-hidden="true">+</span></summary><div><p>Workers propagate marketplace changes asynchronously. Automatic, competitive, and takeover pricing modes share stop-loss constraints. Product mapping connects external listings to internal inventory, while a custom ORM path supports database-intensive operations.</p></div></details>
         </div>
-        <div class="index">01</div>
-      </div>
-
-      <div class="company-grid">
-        <article class="company-project reveal">
-          <div class="company-project-header">
-            <div>
-              <div class="project-id">system_01 · Commerce infrastructure</div>
-              <h3>Multi-Platform Sync &amp; Pricing Engine</h3>
-            </div>
-            <span class="status"><i></i> production</span>
-          </div>
-          <ul>
-            <li>Synchronizes products, inventory, orders, discounts and invoices across Digikala, Snapp, Basalam and Tapsi.</li>
-            <li>Coordinates roughly 12 concurrent workers to process and propagate marketplace data with low delay.</li>
-            <li>Supports Automatic, Competitive and Takeover pricing with live competitor crawling and hard stop-loss limits.</li>
-            <li>Matches external marketplace listings to internal inventory through product mapping and recommendations.</li>
-            <li>Includes a lightweight custom ORM path for database-intensive operations where standard abstractions add measurable overhead.</li>
-            <li>Provides financial endpoints for profit calculation, settlement and operational reporting.</li>
-          </ul>
-          <div class="chips">
-            <span class="chip">Python</span><span class="chip">Litestar</span><span class="chip">Taskiq</span>
-            <span class="chip">PostgreSQL</span><span class="chip">Redis</span>
-          </div>
-        </article>
-
-        <article class="company-project reveal">
-          <div class="company-project-header">
-            <div>
-              <div class="project-id">system_02 · Fintech</div>
-              <h3>Digital Gold Trading Platform</h3>
-            </div>
-          </div>
-          <ul>
-            <li>Executes back-to-back supplier purchases immediately after user trades to reduce exposure to gold-price movement.</li>
-            <li>Uses RabbitMQ and Redis workers for reliable, concurrent and asynchronous trade execution.</li>
-            <li>Detects supplier failures and activates operational fallbacks, monitoring and immediate administrator alerts.</li>
-          </ul>
-          <div class="chips">
-            <span class="chip">FastAPI</span><span class="chip">RabbitMQ</span>
-            <span class="chip">Redis</span><span class="chip">PostgreSQL</span>
-          </div>
-        </article>
-
-        <article class="company-project reveal">
-          <div class="company-project-header">
-            <div>
-              <div class="project-id">system_03 · E-commerce</div>
-              <h3>Gold &amp; Jewelry Commerce</h3>
-            </div>
-          </div>
-          <ul>
-            <li>Reprices store inventory automatically from live gold-market rates.</li>
-            <li>Categorizes products through heuristic scoring while preserving explicit administrative control.</li>
-            <li>Collects and scores training data for a future neural-network categorization model.</li>
-          </ul>
-          <div class="chips">
-            <span class="chip">FastAPI</span><span class="chip">Celery</span>
-            <span class="chip">Redis</span><span class="chip">Algorithms</span>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="section shell" id="projects">
-      <div class="section-head reveal">
-        <div>
-          <small>Open-source engineering</small>
-          <h2>Infrastructure made reusable.</h2>
-          <p class="section-copy">Frameworks and typed SDKs extracted from recurring backend problems: application structure, provider fragmentation, unreliable payloads and sync/async duplication.</p>
-        </div>
-        <div class="index">02</div>
-      </div>
-
-      <div class="projects">
-        <a class="project featured reveal" href="https://github.com/stupidprogrammer4/fastamu" target="_blank" rel="noopener">
-          <div class="project-top"><span>Featured · Framework</span><span>↗</span></div>
-          <h3>Fastamu</h3>
-          <p>A convention-driven modular-monolith framework that gives FastAPI a cohesive application architecture, automatic discovery and production infrastructure.</p>
-          <div class="chips"><span class="chip">FastAPI</span><span class="chip">Dishka</span><span class="chip">Taskiq</span><span class="chip">SQLModel</span><span class="chip">CQRS</span></div>
-        </a>
-        <a class="project small reveal" href="https://github.com/stupidprogrammer4/iranian-marketplaces-sdk" target="_blank" rel="noopener">
-          <div class="project-top"><span>SDK · <b data-stars>11</b> ★</span><span>↗</span></div>
-          <h3>Iranian Marketplaces SDK</h3>
-          <p>One typed sync/async interface for Digikala, Snapp, Basalam and Tapsi.</p>
-          <div class="chips"><span class="chip">Python</span><span class="chip">Pydantic</span><span class="chip">httpx</span></div>
-        </a>
-        <a class="project reveal" href="https://github.com/stupidprogrammer4/payment-gateways-sdk" target="_blank" rel="noopener">
-          <div class="project-top"><span>Fintech · SDK</span><span>↗</span></div>
-          <h3>Payment Gateways SDK</h3>
-          <p>A consistent, failure-aware interface for seven Iranian payment gateways with interchangeable synchronous and asynchronous clients.</p>
-          <div class="chips"><span class="chip">Typed</span><span class="chip">Sync / Async</span><span class="chip">7 gateways</span></div>
-        </a>
-        <a class="project reveal" href="https://github.com/stupidprogrammer4/sms-providers-sdk" target="_blank" rel="noopener">
-          <div class="project-top"><span>Messaging · SDK</span><span>↗</span></div>
-          <h3>SMS Providers SDK</h3>
-          <p>A provider-neutral messaging client with strict types, consistent errors and safeguards against credential leakage.</p>
-          <div class="chips"><span class="chip">Python</span><span class="chip">mypy strict</span><span class="chip">AsyncIO</span></div>
-        </a>
-        <a class="project small reveal" href="https://github.com/stupidprogrammer4/zohal-sdk" target="_blank" rel="noopener">
-          <div class="project-top"><span>Identity · SDK</span><span>↗</span></div>
-          <h3>Zohal SDK</h3>
-          <p>Thirty-seven typed banking, identity, utility and credit inquiry endpoints behind one predictable API.</p>
-          <div class="chips"><span class="chip">37 endpoints</span><span class="chip">Validation</span></div>
-        </a>
-      </div>
-    </section>
-
-    <section class="section shell" id="github">
-      <div class="section-head reveal">
-        <div>
-          <small>Code, experiments and long-term practice</small>
-          <h2>Public work, in the open.</h2>
-          <p class="section-copy">The full public footprint—from production-minded Python packages to algorithms, data structures, notebooks and low-level experiments.</p>
-        </div>
-        <div class="index">03</div>
-      </div>
-
-      <div class="github-profile reveal">
-        <article class="profile-card">
-          <div class="profile-login">@stupidprogrammer4</div>
-          <p class="profile-bio">Backend developer at Goldis · Tehran, Iran</p>
-          <div class="profile-meta">
-            <span><b data-repos>23</b> repositories</span>
-            <span><b data-followers>13</b> followers</span>
-            <span><b data-following>17</b> following</span>
-            <span>Member since 2021</span>
-          </div>
-          <a class="button ghost" href="https://github.com/stupidprogrammer4" target="_blank" rel="noopener">Open GitHub profile ↗</a>
-        </article>
-        <article class="contribution-card">
-          <div class="project-top"><span>Contribution calendar · last 12 months</span><span>365D</span></div>
-          <img src="static/images/contributions.svg" width="663" height="104" alt="Pouya Sadeghi's GitHub contribution calendar for the last twelve months" loading="lazy">
-        </article>
-      </div>
-
-      <article class="activity-card reveal">
-        <div class="project-top"><span>Contribution activity · weekly totals</span><span>LINE GRAPH</span></div>
-        <img src="static/images/activity-graph.svg" width="900" height="280" alt="Line graph of Pouya Sadeghi's weekly GitHub contribution activity" loading="lazy">
       </article>
 
-      <article class="snake-card reveal">
-        <div class="project-top"><span>Contribution snake · animated</span><span>LIVE</span></div>
-        <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/stupidprogrammer4/stupidprogrammer4/output/github-contribution-grid-snake-dark.svg">
-          <img src="https://raw.githubusercontent.com/stupidprogrammer4/stupidprogrammer4/output/github-contribution-grid-snake.svg" alt="Animated snake moving across Pouya Sadeghi's GitHub contributions" loading="lazy">
-        </picture>
-      </article>
-
-      <div class="repo-grid">
-        <a class="repo reveal" data-repo="fastamu" href="https://github.com/stupidprogrammer4/fastamu" target="_blank" rel="noopener"><span class="repo-name">fastamu</span><p>Convention-driven modular-monolith framework for Python backends.</p><span class="repo-meta"><span>Python</span><span>★ 1</span></span></a>
-        <a class="repo reveal" data-repo="iranian-marketplaces-sdk" href="https://github.com/stupidprogrammer4/iranian-marketplaces-sdk" target="_blank" rel="noopener"><span class="repo-name">iranian-marketplaces-sdk</span><p>Unified typed SDK for Digikala, Snapp, Basalam and Tapsi.</p><span class="repo-meta"><span>Python</span><span>★ 11</span></span></a>
-        <a class="repo reveal" data-repo="payment-gateways-sdk" href="https://github.com/stupidprogrammer4/payment-gateways-sdk" target="_blank" rel="noopener"><span class="repo-name">payment-gateways-sdk</span><p>Sync and async interface for seven Iranian payment gateways.</p><span class="repo-meta"><span>Python</span><span>★ 1</span></span></a>
-        <a class="repo reveal" data-repo="sms-providers-sdk" href="https://github.com/stupidprogrammer4/sms-providers-sdk" target="_blank" rel="noopener"><span class="repo-name">sms-providers-sdk</span><p>Typed provider-neutral client for major Iranian SMS services.</p><span class="repo-meta"><span>Python</span><span>★ 0</span></span></a>
-        <a class="repo reveal" data-repo="zohal-sdk" href="https://github.com/stupidprogrammer4/zohal-sdk" target="_blank" rel="noopener"><span class="repo-name">zohal-sdk</span><p>Typed SDK covering 37 banking, identity and utility inquiries.</p><span class="repo-meta"><span>Python</span><span>★ 0</span></span></a>
-        <a class="repo reveal" data-repo="math-for-fun" href="https://github.com/stupidprogrammer4/math-for-fun" target="_blank" rel="noopener"><span class="repo-name">math-for-fun</span><p>Mathematical experiments and notebooks.</p><span class="repo-meta"><span>Jupyter Notebook</span><span>★ 0</span></span></a>
-        <a class="repo reveal" data-repo="amupouya" href="https://github.com/stupidprogrammer4/amupouya" target="_blank" rel="noopener"><span class="repo-name">amupouya</span><p>This Matrix-themed personal portfolio.</p><span class="repo-meta"><span>HTML</span><span>★ 0</span></span></a>
-        <a class="repo reveal" data-repo="ds-sharif-spring-1404" href="https://github.com/stupidprogrammer4/ds-sharif-spring-1404" target="_blank" rel="noopener"><span class="repo-name">ds-sharif-spring-1404</span><p>Data-structure projects from SUT, Spring 1404.</p><span class="repo-meta"><span>C++</span><span>★ 0</span></span></a>
-        <a class="repo reveal" data-repo="leetcode" href="https://github.com/stupidprogrammer4/leetcode" target="_blank" rel="noopener"><span class="repo-name">leetcode</span><p>LeetCode problem solutions and algorithm practice.</p><span class="repo-meta"><span>C++</span><span>★ 0</span></span></a>
-        <a class="repo reveal" data-repo="quera" href="https://github.com/stupidprogrammer4/quera" target="_blank" rel="noopener"><span class="repo-name">quera</span><p>Competitive-programming solutions from Quera.</p><span class="repo-meta"><span>C++</span><span>★ 2</span></span></a>
-        <a class="repo reveal" data-repo="recommender-system" href="https://github.com/stupidprogrammer4/recommender-system" target="_blank" rel="noopener"><span class="repo-name">recommender-system</span><p>Recommendation-system exploration in notebooks.</p><span class="repo-meta"><span>Jupyter Notebook</span><span>★ 0</span></span></a>
-        <a class="repo reveal" data-repo="riverraid" href="https://github.com/stupidprogrammer4/riverraid" target="_blank" rel="noopener"><span class="repo-name">riverraid</span><p>Low-level River Raid game experiment.</p><span class="repo-meta"><span>Rust</span><span>★ 0</span></span></a>
-        <a class="repo reveal" data-repo="minesweeper" href="https://github.com/stupidprogrammer4/minesweeper" target="_blank" rel="noopener"><span class="repo-name">minesweeper</span><p>A Minesweeper implementation written in C.</p><span class="repo-meta"><span>C</span><span>★ 2</span></span></a>
-        <a class="repo reveal" data-repo="stupidprogrammer4" href="https://github.com/stupidprogrammer4/stupidprogrammer4" target="_blank" rel="noopener"><span class="repo-name">stupidprogrammer4</span><p>Matrix-themed GitHub profile, identity terminal and contribution automation.</p><span class="repo-meta"><span>Profile</span><span>★ 1</span></span></a>
+      <div class="work-pair">
+        <article class="work-card">
+          <div class="work-visual trade-visual" role="img" aria-label="Trade requests pass through a queue to supplier execution, with failure recovery">
+            <div class="visual-heading"><span>RELIABLE EXECUTION</span><span aria-hidden="true">↗</span></div>
+            <div class="trade-flow" aria-hidden="true"><span class="flow-node">Trade</span><span class="flow-connector">→</span><span class="flow-node flow-queue"><i></i><i></i><i></i><b>Queue</b></span><span class="flow-connector">→</span><span class="flow-node">Supplier</span></div>
+            <div class="flow-note" aria-hidden="true"><span>↳</span> Failure recovery &amp; monitoring</div>
+          </div>
+          <div class="work-card-copy"><p class="eyebrow">Financial systems · Goldis</p><h3>Trading with a plan for failure.</h3><p>A digital gold trading backend with asynchronous supplier execution, operational fallbacks, and monitoring. RabbitMQ and Redis coordinate background work after user trades.</p><ul class="tags" aria-label="Technologies"><li>FastAPI</li><li>RabbitMQ</li><li>Redis</li><li>PostgreSQL</li></ul></div>
+        </article>
+        <article class="work-card">
+          <div class="work-visual pricing-visual" role="img" aria-label="Live gold market rates inform inventory pricing and product categorization">
+            <div class="visual-heading"><span>ADAPTIVE COMMERCE</span><span aria-hidden="true">↗</span></div>
+            <div class="price-art" aria-hidden="true"><div class="price-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="price-tag">Market → inventory</div></div>
+            <div class="visual-caption"><span>Live rates. Practical heuristics.</span><span class="tiny-dot" aria-hidden="true"></span></div>
+          </div>
+          <div class="work-card-copy"><p class="eyebrow">E-commerce · Goldis</p><h3>Keeping a gold store in step.</h3><p>Automatic inventory repricing from gold-market rates, with heuristic product categorization and administrative control. A practical mix of background jobs and algorithmic reasoning.</p><ul class="tags" aria-label="Technologies"><li>FastAPI</li><li>Celery</li><li>Redis</li><li>Algorithms</li></ul></div>
+        </article>
       </div>
     </section>
 
-    <section class="section shell" id="stack">
-      <div class="section-head reveal">
-        <div>
-          <small>Tools selected by constraints</small>
-          <h2>A practical backend toolkit.</h2>
-          <p class="section-copy">I choose technologies for the workload and failure model—not for novelty. The common thread is typed boundaries, observable behavior and maintainable concurrency.</p>
+    <section class="workshop section" id="lab" aria-labelledby="lab-heading">
+      <div class="shell">
+        <div class="section-label"><span>03 / The workshop</span><span class="line" aria-hidden="true"></span></div>
+        <div class="section-heading"><h2 id="lab-heading">Things I keep<br><span class="muted-heading">coming back to.</span></h2><p>Small tools and bigger experiments.<br>Built from the problems I actually run into.</p></div>
+        <div class="lab-grid">
+          <article class="lab-feature">
+            <span class="project-category">Application architecture</span><span class="project-glyph" aria-hidden="true">✳</span>
+            <h3>Papilio</h3><p>A modular foundation for Python APIs. Evolved from Fastamu, it brings application structure, dependency boundaries, and reusable infrastructure together.</p>
+            <a class="text-link" href="https://github.com/stupidprogrammer4/papilio" target="_blank" rel="noopener noreferrer">Explore Papilio <span aria-hidden="true">↗</span></a>
+          </article>
+          <article class="lab-project"><span class="project-category">Background work</span><h3>Papilio Tasks</h3><p>Jobs and events as an independent building block, so background work has a clear home beyond the API layer.</p><a class="text-link" href="https://github.com/stupidprogrammer4/papilio-tasks" target="_blank" rel="noopener noreferrer">Explore the project <span aria-hidden="true">↗</span></a></article>
+          <article class="lab-project"><span class="project-category">Integrations</span><h3>Marketplace SDK</h3><p>A typed sync and async interface to Digikala, Snapp, Basalam, and Tapsi. One place to handle their differences.</p><a class="text-link" href="https://github.com/stupidprogrammer4/iranian-marketplaces-sdk" target="_blank" rel="noopener noreferrer">Explore the project <span aria-hidden="true">↗</span></a></article>
+          <article class="lab-project"><span class="project-category">Tools for exploration</span><h3>Digikala MCP</h3><p>A bridge between Digikala and MCP clients, making marketplace tools available through a familiar protocol.</p><a class="text-link" href="https://github.com/stupidprogrammer4/digikala-mcp" target="_blank" rel="noopener noreferrer">Explore the project <span aria-hidden="true">↗</span></a></article>
         </div>
-        <div class="index">04</div>
-      </div>
-      <div class="capabilities">
-        <article class="capability reveal"><div class="code">module_01</div><h3>Backend architecture</h3><p>Modular services, clean dependency boundaries, CQRS read models and domain-led APIs.</p><div class="stack">FastAPI · Litestar · Django · Dishka</div></article>
-        <article class="capability reveal"><div class="code">module_02</div><h3>Concurrency &amp; messaging</h3><p>Worker fleets and asynchronous pipelines with explicit retry, failure and throughput behavior.</p><div class="stack">Taskiq · Celery · RabbitMQ · Redis</div></article>
-        <article class="capability reveal"><div class="code">module_03</div><h3>Data systems</h3><p>Transactional persistence, caching and search projections designed around access patterns.</p><div class="stack">PostgreSQL · Elasticsearch · SQLAlchemy</div></article>
-        <article class="capability reveal"><div class="code">module_04</div><h3>Typed SDK design</h3><p>Predictable clients that normalize third-party APIs without discarding provider-specific detail.</p><div class="stack">Pydantic · dataclasses · httpx · aiohttp</div></article>
-        <article class="capability reveal"><div class="code">module_05</div><h3>Algorithms</h3><p>Data structures, heuristics and correctness reasoning carried from contests into production.</p><div class="stack">C++ · Python · Problem solving</div></article>
-        <article class="capability reveal"><div class="code">module_06</div><h3>Low-level exploration</h3><p>Systems and graphics work that keeps the layers below the framework understandable.</p><div class="stack">C · Rust · SDL2 · Linux</div></article>
+        <div class="more-tools"><p>Also on my workbench</p><div><a href="https://github.com/stupidprogrammer4/payment-gateways-sdk" target="_blank" rel="noopener noreferrer">Payment integrations ↗</a><a href="https://github.com/stupidprogrammer4/sms-providers-sdk" target="_blank" rel="noopener noreferrer">Messaging clients ↗</a><a href="https://github.com/stupidprogrammer4/zohal-sdk" target="_blank" rel="noopener noreferrer">Identity &amp; inquiry tools ↗</a></div></div>
+        <p class="contribution-note">Sometimes the right place for a fix is upstream. <a href="https://github.com/taskiq-python/taskiq/pull/672" target="_blank" rel="noopener noreferrer">My contribution to Taskiq’s scheduler cleanup <span aria-hidden="true">↗</span></a></p>
       </div>
     </section>
 
-    <section class="section shell" id="contact">
-      <div class="contact reveal">
-        <div class="kicker">Start a conversation</div>
-        <h2>Have a backend problem worth solving?</h2>
-        <p>I’m interested in systems where concurrency, correctness and performance are product requirements—not afterthoughts.</p>
-        <div class="contact-links">
-          <a class="button primary" href="mailto:ilovelinux764@gmail.com">Send an email</a>
-          <a class="button ghost" href="https://www.linkedin.com/in/pouya-sadeghi-5a2179250" target="_blank" rel="noopener">LinkedIn ↗</a>
-          <a class="button ghost" href="https://github.com/stupidprogrammer4" target="_blank" rel="noopener">GitHub ↗</a>
-        </div>
-      </div>
+    <section class="approach section shell" aria-labelledby="approach-heading">
+      <div class="section-label"><span>04 / How I think</span><span class="line" aria-hidden="true"></span></div>
+      <div class="approach-layout"><div><h2 id="approach-heading">The tools change.<br><span class="muted-heading">The questions stay.</span></h2><p class="section-description">What happens under load? Where does failure go? Will the next person understand this?</p></div><div class="principles"><article><span>01</span><div><h3>Make the boundaries clear.</h3><p>Typed interfaces, explicit dependencies, and modules that each have a job.</p></div></article><article><span>02</span><div><h3>Think about the unhappy path.</h3><p>Retries, cancellation, cleanup, and observability belong in the design.</p></div></article><article><span>03</span><div><h3>Choose tools for the problem.</h3><p>Python for most backends. PostgreSQL for persistence. Queues when work needs its own pace.</p></div></article></div></div>
+      <div class="toolbox"><span>Often on my desk</span><p>Python <i>/</i> FastAPI <i>/</i> Litestar <i>/</i> PostgreSQL <i>/</i> Redis <i>/</i> RabbitMQ <i>/</i> Docker <i>/</i> Linux</p></div>
+    </section>
+
+    <section class="life section shell" id="life" aria-labelledby="life-heading">
+      <div class="section-label"><span>05 / Beyond the keyboard</span><span class="line" aria-hidden="true"></span></div>
+      <div class="life-layout"><div><h2 id="life-heading">A person,<br><span class="muted-heading">not just a stack.</span></h2><p class="section-description">There’s more to me than what I ship.</p></div><div class="life-notes"><article><span class="life-icon" aria-hidden="true">↗</span><div><h3>A different kind of practice.</h3><p>Boxing and calisthenics are part of life away from the screen. Different problems; the same patience with repetition.</p></div></article><article><span class="life-icon" aria-hidden="true">∑</span><div><h3>For the fun of figuring it out.</h3><p>Competitive programming, mathematical experiments, and low-level game projects. I like a challenge even when it doesn’t need a roadmap.</p><a class="text-link" href="https://quera.org/profile/googooli" target="_blank" rel="noopener noreferrer">Find me on Quera <span aria-hidden="true">↗</span></a></div></article><article><span class="life-icon" aria-hidden="true">✳</span><div><h3>A soft spot for the unexpected.</h3><p>The Matrix, an Arch Linux desktop, and blue butterflies. A few of the things that make this corner of the internet mine.</p></div></article></div></div>
+    </section>
+
+    <section class="contact shell" id="contact" aria-labelledby="contact-heading">
+      <div class="contact-art" aria-hidden="true">✳</div><p class="eyebrow">06 / Start a conversation</p><h2 id="contact-heading">Have something<br><span class="gradient-text">in mind?</span></h2><p>A backend challenge, an open-source idea, or just a good conversation. I’d love to hear from you.</p>
+      <div class="contact-actions"><a class="button primary" href="mailto:ilovelinux764@gmail.com">Say hello by email <span aria-hidden="true">↗</span></a><button class="copy-email text-link" type="button" hidden>Copy email <span aria-hidden="true">⧉</span></button><span class="copy-status" role="status" aria-live="polite"></span></div>
+      <a class="email-address" href="mailto:ilovelinux764@gmail.com">ilovelinux764@gmail.com</a>
+      <div class="social-links"><a href="https://www.linkedin.com/in/pouya-sadeghi-5a2179250/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a><a href="https://github.com/stupidprogrammer4" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://quera.org/profile/googooli" target="_blank" rel="noopener noreferrer">Quera ↗</a><a href="https://reddit.com/user/amupouya" target="_blank" rel="noopener noreferrer">Reddit ↗</a></div>
     </section>
   </main>
 
-  <footer>
-    <div class="shell footer">
-      <span>© <span id="year">2026</span> Pouya Sadeghi</span>
-      <span class="online">● SYSTEM ONLINE · TEHRAN</span>
-    </div>
-  </footer>
-
+  <footer class="site-footer shell"><div><a class="brand" href="#top">pouya<span>.</span></a><p>Made with care. Always a work in progress.</p></div><div class="footer-end"><span>© <span id="year">2026</span> Pouya Sadeghi</span><a href="#top">Back to top ↑</a></div></footer>
   <script src="scripts/main.js" defer></script>
 </body>
 </html>
